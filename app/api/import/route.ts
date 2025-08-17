@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     }
 
     const fileContent = await file.text()
-    let data: Record<string, unknown>
+    let data: unknown
 
     try {
       if (file.name.endsWith('.json')) {
@@ -89,7 +89,7 @@ interface ImportResults {
   }>;
 }
 
-async function importProperties(data: Record<string, unknown>) {
+async function importProperties(data: unknown) {
   const results: ImportResults = { success: 0, errors: 0, details: [] }
 
   for (const item of Array.isArray(data) ? data : [data]) {
@@ -121,7 +121,7 @@ async function importProperties(data: Record<string, unknown>) {
   return results
 }
 
-async function importInvestments(data: Record<string, unknown>) {
+async function importInvestments(data: unknown) {
   const results: ImportResults = { success: 0, errors: 0, details: [] }
 
   for (const item of Array.isArray(data) ? data : [data]) {
@@ -154,7 +154,7 @@ async function importInvestments(data: Record<string, unknown>) {
   return results
 }
 
-async function importIncome(data: Record<string, unknown>) {
+async function importIncome(data: unknown) {
   const results: ImportResults = { success: 0, errors: 0, details: [] }
 
   for (const item of Array.isArray(data) ? data : [data]) {
@@ -185,7 +185,7 @@ async function importIncome(data: Record<string, unknown>) {
   return results
 }
 
-async function importExpenses(data: Record<string, unknown>) {
+async function importExpenses(data: unknown) {
   const results: ImportResults = { success: 0, errors: 0, details: [] }
 
   for (const item of Array.isArray(data) ? data : [data]) {
@@ -216,36 +216,37 @@ async function importExpenses(data: Record<string, unknown>) {
   return results
 }
 
-async function importAllData(data: Record<string, unknown>) {
+async function importAllData(data: unknown) {
   const results: ImportResults = { success: 0, errors: 0, details: [] }
+  const dataObj = data as Record<string, unknown>
 
   // Import properties
-  if (data.properties) {
-    const propertyResults = await importProperties(data.properties)
+  if (dataObj.properties) {
+    const propertyResults = await importProperties(dataObj.properties)
     results.success += propertyResults.success
     results.errors += propertyResults.errors
     results.details.push(...propertyResults.details)
   }
 
   // Import investments
-  if (data.investments) {
-    const investmentResults = await importInvestments(data.investments)
+  if (dataObj.investments) {
+    const investmentResults = await importInvestments(dataObj.investments)
     results.success += investmentResults.success
     results.errors += investmentResults.errors
     results.details.push(...investmentResults.details)
   }
 
   // Import income
-  if (data.income) {
-    const incomeResults = await importIncome(data.income)
+  if (dataObj.income) {
+    const incomeResults = await importIncome(dataObj.income)
     results.success += incomeResults.success
     results.errors += incomeResults.errors
     results.details.push(...incomeResults.details)
   }
 
   // Import expenses
-  if (data.expenses) {
-    const expenseResults = await importExpenses(data.expenses)
+  if (dataObj.expenses) {
+    const expenseResults = await importExpenses(dataObj.expenses)
     results.success += expenseResults.success
     results.errors += expenseResults.errors
     results.details.push(...expenseResults.details)
