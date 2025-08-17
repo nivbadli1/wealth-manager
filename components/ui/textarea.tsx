@@ -4,7 +4,8 @@ import { cn } from "@/lib/utils"
 
 export interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  // Extending base textarea props
+  // This interface extends the base textarea props without adding new properties
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 }
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(

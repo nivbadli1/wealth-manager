@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import Link from 'next/link'
 import {
-  PlusCircle, Search, Filter, Edit, Trash2, Eye, DollarSign, FileText, PiggyBank
+  PlusCircle, Search, Filter, Edit, Trash2, Eye, DollarSign, FileText, PiggyBank, TrendingUp
 } from 'lucide-react'
 
 // Mock data for demonstration

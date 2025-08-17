@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
         if (type === 'all') {
           exportData = generateCSVForAllData(data)
         } else {
-          exportData = generateCSV(data, type)
+          exportData = generateCSV(data)
         }
         contentType = 'text/csv'
         filename = `wealth-manager-${type}-${new Date().toISOString().split('T')[0]}.csv`
@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-function generateCSV(data: Record<string, unknown>[], type: string): string {
+function generateCSV(data: Record<string, unknown>[]): string {
   if (!Array.isArray(data) || data.length === 0) {
     return 'No data available'
   }
@@ -129,28 +129,28 @@ function generateCSVForAllData(data: Record<string, unknown>): string {
   // Properties section
   if (data.properties && data.properties.length > 0) {
     sections.push('=== PROPERTIES ===')
-    sections.push(generateCSV(data.properties, 'properties'))
+    sections.push(generateCSV(data.properties))
     sections.push('')
   }
   
   // Investments section
   if (data.investments && data.investments.length > 0) {
     sections.push('=== INVESTMENTS ===')
-    sections.push(generateCSV(data.investments, 'investments'))
+    sections.push(generateCSV(data.investments))
     sections.push('')
   }
   
   // Income section
   if (data.income && data.income.length > 0) {
     sections.push('=== INCOME ===')
-    sections.push(generateCSV(data.income, 'income'))
+    sections.push(generateCSV(data.income))
     sections.push('')
   }
   
   // Expenses section
   if (data.expenses && data.expenses.length > 0) {
     sections.push('=== EXPENSES ===')
-    sections.push(generateCSV(data.expenses, 'expenses'))
+    sections.push(generateCSV(data.expenses))
     sections.push('')
   }
   

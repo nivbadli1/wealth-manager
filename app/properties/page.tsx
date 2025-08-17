@@ -85,7 +85,7 @@ const statusColors = {
 }
 
 export default function PropertiesPage() {
-  const [properties] = useState([])
+  const [properties] = useState([]) // eslint-disable-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 

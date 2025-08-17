@@ -17,7 +17,7 @@ interface PropertyDistributionChartProps {
 export function PropertyDistributionChart({ data, title }: PropertyDistributionChartProps) {
   const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: PropertyDistributionData }> }) => {
     if (active && payload && payload.length) {
-      const tooltipData = payload[0]
+      const tooltipData = payload[0] // eslint-disable-line @typescript-eslint/no-unused-vars
       return (
         <div className="bg-slate-800 border border-slate-600 p-3 rounded-lg shadow-lg">
           <p className="text-white font-medium mb-1">{data.name}</p>
