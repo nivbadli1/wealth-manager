@@ -34,17 +34,58 @@ export default function NewPropertyPage() {
     setError('') // Clear error when user starts typing
   }
 
+  const validateForm = () => {
+    if (!formData.name.trim()) {
+      setError('שם הנכס הוא שדה חובה')
+      return false
+    }
+    if (!formData.address.trim()) {
+      setError('כתובת הנכס היא שדה חובה')
+      return false
+    }
+    if (!formData.purchaseDate) {
+      setError('תאריך רכישה הוא שדה חובה')
+      return false
+    }
+    if (!formData.purchasePrice || parseFloat(formData.purchasePrice) <= 0) {
+      setError('מחיר רכישה חייב להיות חיובי')
+      return false
+    }
+    if (!formData.currentValue || parseFloat(formData.currentValue) <= 0) {
+      setError('שווי נוכחי חייב להיות חיובי')
+      return false
+    }
+    if (!formData.propertyType) {
+      setError('יש לבחור סוג נכס')
+      return false
+    }
+    if (!formData.status) {
+      setError('יש לבחור סטטוס נכס')
+      return false
+    }
+    return true
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
     setError('')
 
+    if (!validateForm()) {
+      setIsSubmitting(false)
+      return
+    }
+
     try {
-      // Prepare the data for submission
+      // Prepare the data for submission - only include fields that match the schema
       const submitData = {
-        ...formData,
+        name: formData.name,
+        address: formData.address,
+        purchaseDate: formData.purchaseDate,
         purchasePrice: formData.purchasePrice ? parseFloat(formData.purchasePrice) : 0,
         currentValue: formData.currentValue ? parseFloat(formData.currentValue) : 0,
+        propertyType: formData.propertyType,
+        status: formData.status,
       }
 
       const response = await fetch('/api/properties', {
