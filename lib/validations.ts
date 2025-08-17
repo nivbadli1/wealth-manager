@@ -13,7 +13,7 @@ export const propertySchema = z.object({
 
 // Investment validation schema
 export const investmentSchema = z.object({
-  type: z.enum(['pension', 'study_fund', 'savings', 'stocks', 'bonds', 'etf']),
+  type: z.enum(['pension', 'study_fund', 'savings', 'stocks', 'bonds', 'etf', 'mutual_fund', 'crypto', 'other']),
   name: z.string().min(1, 'שם ההשקעה הוא שדה חובה'),
   initialAmount: z.number().min(0, 'סכום התחלתי חייב להיות חיובי').max(100000000, 'סכום התחלתי גבוה מדי'),
   currentValue: z.number().min(0, 'שווי נוכחי חייב להיות חיובי').max(100000000, 'שווי נוכחי גבוה מדי'),

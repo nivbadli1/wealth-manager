@@ -1,3 +1,6 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -7,54 +10,15 @@ import {
   PlusCircle, Search, Filter, Edit, Trash2, Eye, DollarSign, FileText, PiggyBank, TrendingUp
 } from 'lucide-react'
 
-// Mock data for demonstration
-const mockInvestments = [
-  {
-    id: '1',
-    type: 'stocks',
-    name: 'תיק השקעות מניות',
-    initialAmount: 500000,
-    currentValue: 580000,
-    date: new Date('2023-05-10'),
-    returnRate: 16.0,
-  },
-  {
-    id: '2',
-    type: 'mutual_fund',
-    name: 'קרן נאמנות',
-    initialAmount: 300000,
-    currentValue: 320000,
-    date: new Date('2023-08-15'),
-    returnRate: 6.7,
-  },
-  {
-    id: '3',
-    type: 'pension',
-    name: 'קופת גמל פסגות',
-    initialAmount: 150000,
-    currentValue: 185000,
-    date: new Date('2018-01-01'),
-    returnRate: 7.2,
-  },
-  {
-    id: '4',
-    type: 'study_fund',
-    name: 'קרן השתלמות כלל',
-    initialAmount: 80000,
-    currentValue: 95000,
-    date: new Date('2019-06-01'),
-    returnRate: 5.8,
-  },
-  {
-    id: '5',
-    type: 'savings',
-    name: 'חיסכון בנקאי',
-    initialAmount: 100000,
-    currentValue: 105000,
-    date: new Date('2021-01-01'),
-    returnRate: 1.8,
-  },
-]
+interface Investment {
+  id: string
+  type: string
+  name: string
+  initialAmount: number
+  currentValue: number
+  date: string
+  returnRate?: number
+}
 
 const typeLabels = {
   stocks: 'מניות',
@@ -79,10 +43,50 @@ const typeColors = {
 }
 
 export default function InvestmentsPage() {
-  const totalInvestments = mockInvestments.reduce((sum, investment) => sum + investment.currentValue, 0)
-  const totalInitial = mockInvestments.reduce((sum, investment) => sum + investment.initialAmount, 0)
+  const [investments, setInvestments] = useState<Investment[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchInvestments = async () => {
+      try {
+        const response = await fetch('/api/investments')
+        if (!response.ok) {
+          throw new Error('Failed to fetch investments')
+        }
+        const data = await response.json()
+        setInvestments(data)
+      } catch (error) {
+        console.error('Error fetching investments:', error)
+        setError('שגיאה בטעינת ההשקעות')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchInvestments()
+  }, [])
+
+  const totalInvestments = investments.reduce((sum, investment) => sum + investment.currentValue, 0)
+  const totalInitial = investments.reduce((sum, investment) => sum + investment.initialAmount, 0)
   const totalReturn = totalInvestments - totalInitial
   const averageReturn = totalInitial > 0 ? (totalReturn / totalInitial * 100) : 0
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-96">
+        <div className="text-white">טוען השקעות...</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-96">
+        <div className="text-red-400">{error}</div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -194,7 +198,7 @@ export default function InvestmentsPage() {
                 </tr>
               </thead>
               <tbody>
-                {mockInvestments.map((investment) => {
+                {investments.map((investment) => {
                   const profit = investment.currentValue - investment.initialAmount
                   const returnRate = (profit / investment.initialAmount * 100)
                   
@@ -203,7 +207,7 @@ export default function InvestmentsPage() {
                       <td className="py-4 px-4">
                         <div>
                           <p className="font-medium text-white">{investment.name}</p>
-                          <p className="text-sm text-slate-400">{formatDate(investment.date)}</p>
+                          <p className="text-sm text-slate-400">{formatDate(new Date(investment.date))}</p>
                         </div>
                       </td>
                       <td className="py-4 px-4">
