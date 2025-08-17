@@ -9,14 +9,19 @@ interface PerformanceComparisonChartProps {
 
 export function PerformanceComparisonChart({ data, title }: PerformanceComparisonChartProps) {
   // Transform property data for the chart
-  const chartData = data.map(property => ({
-    name: property.title || property.name,
-    purchaseValue: property.purchasePrice || property.initialAmount || 0,
-    currentValue: property.currentValue || property.value || 0,
-    roi: property.roi || ((property.currentValue - property.purchasePrice) / property.purchasePrice * 100) || 0
-  }))
+  const chartData = data.map(property => {
+    const prop = property as Record<string, unknown>
+    const currentValue = (prop.currentValue as number) || (prop.value as number) || 0
+    const purchasePrice = (prop.purchasePrice as number) || (prop.initialAmount as number) || 0
+    return {
+      name: (prop.title as string) || (prop.name as string),
+      purchaseValue: purchasePrice,
+      currentValue: currentValue,
+      roi: (prop.roi as number) || ((currentValue - purchasePrice) / purchasePrice * 100) || 0
+    }
+  })
 
-  const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string }>; label?: string }) => {
+  const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string; dataKey: string }>; label?: string }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-slate-800 border border-slate-600 rounded-lg p-3 shadow-lg">

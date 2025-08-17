@@ -15,7 +15,7 @@ interface AssetAllocationChartProps {
 export function AssetAllocationChart({ data, title }: AssetAllocationChartProps) {
   const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: Record<string, unknown> }> }) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload
+      const data = payload[0].payload as { name: string; value: number; percentage?: number }
       return (
         <div className="bg-slate-800 border border-slate-600 rounded-lg p-3 shadow-lg">
           <p className="text-white font-medium">{data.name}</p>

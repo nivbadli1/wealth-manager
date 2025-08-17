@@ -183,8 +183,8 @@ export default function IncomePage() {
                       </div>
                     </td>
                     <td className="py-4 px-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${categoryColors[income.category]}`}>
-                        {categoryLabels[income.category]}
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${categoryColors[income.category as keyof typeof categoryColors]}`}>
+                        {categoryLabels[income.category as keyof typeof categoryLabels]}
                       </span>
                     </td>
                     <td className="py-4 px-4">

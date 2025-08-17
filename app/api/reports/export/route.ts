@@ -104,17 +104,17 @@ export async function POST(request: NextRequest) {
         address: prop.address,
         purchasePrice: prop.purchasePrice,
         currentValue: prop.currentValue,
-        purchaseDate: prop.purchaseDate,
+        purchaseDate: prop.purchaseDate.toISOString(),
         status: prop.status,
         rentalIncomes: prop.rentalIncomes.map(rental => ({
           amount: rental.amount,
-          date: rental.date,
+          date: rental.date.toISOString(),
           tenantName: rental.tenantName
         })),
         expenses: prop.propertyExpenses.map(expense => ({
           amount: expense.amount,
           category: expense.category,
-          date: expense.date,
+          date: expense.date.toISOString(),
           description: expense.description
         })),
         mortgages: prop.mortgages.map(mortgage => ({
@@ -131,21 +131,21 @@ export async function POST(request: NextRequest) {
         type: inv.type,
         initialAmount: inv.initialAmount,
         currentValue: inv.currentValue,
-        date: inv.date,
+        date: inv.date.toISOString(),
         returnRate: inv.returnRate
       })),
       income: income.map(inc => ({
         id: inc.id,
         source: inc.source,
         amount: inc.amount,
-        date: inc.date,
+        date: inc.date.toISOString(),
         description: inc.description
       })),
       expenses: expenses.map(exp => ({
         id: exp.id,
         category: exp.category,
         amount: exp.amount,
-        date: exp.date,
+        date: exp.date.toISOString(),
         description: exp.description
       }))
     }
@@ -252,9 +252,9 @@ function generateCSV(data: ReportData): string {
   
   // Properties section
   lines.push('PROPERTIES')
-  lines.push('Title,Type,Address,Purchase Price,Current Value,Purchase Date,Status')
+  lines.push('Name,Type,Address,Purchase Price,Current Value,Purchase Date,Status')
   data.properties.forEach((prop) => {
-    lines.push(`"${prop.title}","${prop.type}","${prop.address}",${prop.purchasePrice},${prop.currentValue},"${prop.purchaseDate}","${prop.status}"`)
+    lines.push(`"${prop.name}","${prop.type}","${prop.address}",${prop.purchasePrice},${prop.currentValue},"${prop.purchaseDate}","${prop.status}"`)
   })
   lines.push('')
   

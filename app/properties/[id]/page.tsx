@@ -105,12 +105,12 @@ export default function PropertyDetailPage() {
                 <div className="space-y-4">
                   <div>
                     <p className="text-sm text-slate-400 mb-1">סוג הנכס</p>
-                    <p className="text-white font-medium">{propertyTypeLabels[property.propertyType]}</p>
+                    <p className="text-white font-medium">{propertyTypeLabels[property.propertyType as keyof typeof propertyTypeLabels]}</p>
                   </div>
                   <div>
                     <p className="text-sm text-slate-400 mb-1">סטטוס</p>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[property.status]}`}>
-                      {statusLabels[property.status]}
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[property.status as keyof typeof statusColors]}`}>
+                      {statusLabels[property.status as keyof typeof statusLabels]}
                     </span>
                   </div>
                   <div>

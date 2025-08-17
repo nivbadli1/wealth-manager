@@ -62,7 +62,7 @@ interface KPICardProps {
   title: string
   value: number | string
   description: string
-  icon: React.ComponentType
+  icon: React.ComponentType<{ className?: string }>
   trend?: {
     value: number
     isPositive: boolean
@@ -116,7 +116,7 @@ function KPICard({ title, value, description, icon: Icon, trend, iconBgColor, hr
 function QuickActionCard({ title, description, icon: Icon, href }: {
   title: string
   description: string
-  icon: React.ComponentType
+  icon: React.ComponentType<{ className?: string }>
   href: string
 }) {
   return (

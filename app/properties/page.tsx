@@ -85,7 +85,7 @@ const statusColors = {
 }
 
 export default function PropertiesPage() {
-  const [properties] = useState([]) // eslint-disable-line @typescript-eslint/no-unused-vars
+  const [properties, setProperties] = useState([]) // eslint-disable-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -264,11 +264,11 @@ export default function PropertiesPage() {
                       </div>
                     </td>
                     <td className="py-4 px-4">
-                      <span className="text-slate-300">{propertyTypeLabels[property.propertyType]}</span>
+                      <span className="text-slate-300">{propertyTypeLabels[property.propertyType as keyof typeof propertyTypeLabels]}</span>
                     </td>
                     <td className="py-4 px-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[property.status]}`}>
-                        {statusLabels[property.status]}
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[property.status as keyof typeof statusColors]}`}>
+                        {statusLabels[property.status as keyof typeof statusLabels]}
                       </span>
                     </td>
                     <td className="py-4 px-4">

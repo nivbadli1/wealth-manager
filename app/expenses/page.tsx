@@ -183,8 +183,8 @@ export default function ExpensesPage() {
                 {mockExpenses.map((expense) => (
                   <tr key={expense.id} className="border-b border-slate-600 hover:bg-slate-700/50">
                     <td className="py-4 px-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${categoryColors[expense.category]}`}>
-                        {categoryLabels[expense.category]}
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${categoryColors[expense.category as keyof typeof categoryColors]}`}>
+                        {categoryLabels[expense.category as keyof typeof categoryLabels]}
                       </span>
                     </td>
                     <td className="py-4 px-4">

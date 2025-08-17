@@ -207,8 +207,8 @@ export default function InvestmentsPage() {
                         </div>
                       </td>
                       <td className="py-4 px-4">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${typeColors[investment.type]}`}>
-                          {typeLabels[investment.type]}
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${typeColors[investment.type as keyof typeof typeColors]}`}>
+                          {typeLabels[investment.type as keyof typeof typeLabels]}
                         </span>
                       </td>
                       <td className="py-4 px-4">

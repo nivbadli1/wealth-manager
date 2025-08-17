@@ -26,7 +26,7 @@ export function FinancialInsights({
   const isHealthyCashFlow = monthlyCashFlow > 0
   const isHealthyDebtRatio = debtToEquityRatio < 0.4
   const avgPropertyROI = propertyPerformance.length > 0 
-    ? propertyPerformance.reduce((sum, prop) => sum + (prop.roi || 0), 0) / propertyPerformance.length 
+    ? propertyPerformance.reduce((sum, prop) => sum + ((prop as Record<string, unknown>).roi as number || 0), 0) / propertyPerformance.length 
     : 0
   // const avgInvestmentROI = investmentPerformance.length > 0 
   //   ? investmentPerformance.reduce((sum, inv) => sum + (inv.roi || 0), 0) / investmentPerformance.length 
