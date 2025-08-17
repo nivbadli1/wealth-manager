@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type') || 'all'
     const format = searchParams.get('format') || 'json'
 
-    let data: Record<string, unknown> = {}
+    let data: unknown = {}
 
     // Fetch data based on type
     switch (type) {
@@ -102,15 +102,16 @@ export async function GET(request: NextRequest) {
   }
 }
 
-function generateCSV(data: Record<string, unknown>[]): string {
+function generateCSV(data: unknown): string {
   if (!Array.isArray(data) || data.length === 0) {
     return 'No data available'
   }
 
-  const headers = Object.keys(data[0])
+  const dataArray = data as Record<string, unknown>[]
+  const headers = Object.keys(dataArray[0])
   const csvRows = [headers.join(',')]
 
-  for (const row of data) {
+  for (const row of dataArray) {
     const values = headers.map(header => {
       const value = row[header]
       if (value === null || value === undefined) return ''
@@ -123,45 +124,46 @@ function generateCSV(data: Record<string, unknown>[]): string {
   return csvRows.join('\n')
 }
 
-function generateCSVForAllData(data: Record<string, unknown>): string {
+function generateCSVForAllData(data: unknown): string {
   const sections = []
+  const dataObj = data as Record<string, unknown[]>
   
   // Properties section
-  if (data.properties && data.properties.length > 0) {
+  if (dataObj.properties && dataObj.properties.length > 0) {
     sections.push('=== PROPERTIES ===')
-    sections.push(generateCSV(data.properties))
+    sections.push(generateCSV(dataObj.properties))
     sections.push('')
   }
   
   // Investments section
-  if (data.investments && data.investments.length > 0) {
+  if (dataObj.investments && dataObj.investments.length > 0) {
     sections.push('=== INVESTMENTS ===')
-    sections.push(generateCSV(data.investments))
+    sections.push(generateCSV(dataObj.investments))
     sections.push('')
   }
   
   // Income section
-  if (data.income && data.income.length > 0) {
+  if (dataObj.income && dataObj.income.length > 0) {
     sections.push('=== INCOME ===')
-    sections.push(generateCSV(data.income))
+    sections.push(generateCSV(dataObj.income))
     sections.push('')
   }
   
   // Expenses section
-  if (data.expenses && data.expenses.length > 0) {
+  if (dataObj.expenses && dataObj.expenses.length > 0) {
     sections.push('=== EXPENSES ===')
-    sections.push(generateCSV(data.expenses))
+    sections.push(generateCSV(dataObj.expenses))
     sections.push('')
   }
   
   // Export metadata
   sections.push('=== EXPORT INFO ===')
-  sections.push(`Export Date,${data.exportDate}`)
-  sections.push(`Version,${data.version}`)
-  sections.push(`Total Properties,${data.properties?.length || 0}`)
-  sections.push(`Total Investments,${data.investments?.length || 0}`)
-  sections.push(`Total Income Records,${data.income?.length || 0}`)
-  sections.push(`Total Expense Records,${data.expenses?.length || 0}`)
+  sections.push(`Export Date,${dataObj.exportDate}`)
+  sections.push(`Version,${dataObj.version}`)
+  sections.push(`Total Properties,${dataObj.properties?.length || 0}`)
+  sections.push(`Total Investments,${dataObj.investments?.length || 0}`)
+  sections.push(`Total Income Records,${dataObj.income?.length || 0}`)
+  sections.push(`Total Expense Records,${dataObj.expenses?.length || 0}`)
   
   return sections.join('\n')
 } 
