@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Property {
+  id            String   @id @default(cuid())
+  name          String
+  address       String
+  purchaseDate  DateTime
+  purchasePrice Float
+  currentValue  Float
+  propertyType  String   // "apartment", "house", "commercial"
+  status        String   // "rented", "vacant", "owner-occupied"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  rentalIncomes    RentalIncome[]
+  propertyExpenses PropertyExpense[]
+  mortgages        Mortgage[]
+}
+
+model RentalIncome {
+  id         String   @id @default(cuid())
+  propertyId String
+  amount     Float
+  date       DateTime
+  tenantName String?
+  notes      String?
+  createdAt  DateTime @default(now())
+  
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+}
+
+model PropertyExpense {
+  id          String   @id @default(cuid())
+  propertyId  String
+  category    String   // "maintenance", "taxes", "insurance", "management"
+  amount      Float
+  date        DateTime
+  description String?
+  createdAt   DateTime @default(now())
+  
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+}
+
+model Mortgage {
+  id             String   @id @default(cuid())
+  propertyId     String
+  bank           String
+  originalAmount Float
+  currentBalance Float
+  monthlyPayment Float
+  interestRate   Float
+  startDate      DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+}
+
+model Investment {
+  id             String   @id @default(cuid())
+  type           String   // "pension", "study_fund", "savings", "stocks"
+  name           String
+  initialAmount  Float
+  currentValue   Float
+  date           DateTime
+  returnRate     Float?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Income {
+  id          String   @id @default(cuid())
+  source      String
+  amount      Float
+  date        DateTime
+  description String?
+  category    String   // "salary", "freelance", "rental", "dividends"
+  createdAt   DateTime @default(now())
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  category    String   // "living", "transportation", "healthcare", "entertainment"
+  amount      Float
+  date        DateTime
+  description String?
+  createdAt   DateTime @default(now())
+}
