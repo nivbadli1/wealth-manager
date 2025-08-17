@@ -1,3 +1,6 @@
+"use client"
+
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -6,6 +9,15 @@ import Link from 'next/link'
 import {
   PlusCircle, Search, Filter, Edit, Trash2, Eye, DollarSign, Calendar, FileText
 } from 'lucide-react'
+
+interface Income {
+  id: string
+  source: string
+  amount: number
+  date: string
+  category: string
+  description?: string
+}
 
 // Mock data for demonstration
 const mockIncome = [
@@ -70,15 +82,55 @@ const categoryColors = {
 }
 
 export default function IncomePage() {
-  const totalIncome = mockIncome.reduce((sum, income) => sum + income.amount, 0)
-  const monthlyIncome = mockIncome
-    .filter(income => {
-      const incomeDate = new Date(income.date)
+  const [income, setIncome] = useState<Income[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchIncome = async () => {
+      try {
+        const response = await fetch('/api/income')
+        if (!response.ok) {
+          throw new Error('Failed to fetch income')
+        }
+        const data = await response.json()
+        setIncome(data)
+      } catch (error) {
+        console.error('Error fetching income:', error)
+        setError('שגיאה בטעינת ההכנסות')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchIncome()
+  }, [])
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-96">
+        <div className="text-white">טוען הכנסות...</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-96">
+        <div className="text-red-400">{error}</div>
+      </div>
+    )
+  }
+
+  const totalIncome = income.reduce((sum, inc) => sum + inc.amount, 0)
+  const monthlyIncome = income
+    .filter(inc => {
+      const incomeDate = new Date(inc.date)
       const currentDate = new Date()
       return incomeDate.getMonth() === currentDate.getMonth() && 
              incomeDate.getFullYear() === currentDate.getFullYear()
     })
-    .reduce((sum, income) => sum + income.amount, 0)
+    .reduce((sum, inc) => sum + inc.amount, 0)
 
   return (
     <div className="space-y-6">
@@ -131,7 +183,7 @@ export default function IncomePage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-400 mb-1">מספר רשומות</p>
-                <p className="text-2xl font-bold text-white">{mockIncome.length}</p>
+                <p className="text-2xl font-bold text-white">{income.length}</p>
               </div>
               <div className="p-3 bg-purple-500 rounded-lg">
                 <FileText className="h-6 w-6 text-white" />
@@ -175,35 +227,35 @@ export default function IncomePage() {
                 </tr>
               </thead>
               <tbody>
-                {mockIncome.map((income) => (
-                  <tr key={income.id} className="border-b border-slate-600 hover:bg-slate-700/50">
+                {income.map((incomeItem) => (
+                  <tr key={incomeItem.id} className="border-b border-slate-600 hover:bg-slate-700/50">
                     <td className="py-4 px-4">
                       <div>
-                        <p className="font-medium text-white">{income.source}</p>
+                        <p className="font-medium text-white">{incomeItem.source}</p>
                       </div>
                     </td>
                     <td className="py-4 px-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${categoryColors[income.category as keyof typeof categoryColors]}`}>
-                        {categoryLabels[income.category as keyof typeof categoryLabels]}
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${categoryColors[incomeItem.category as keyof typeof categoryColors]}`}>
+                        {categoryLabels[incomeItem.category as keyof typeof categoryLabels]}
                       </span>
                     </td>
                     <td className="py-4 px-4">
-                      <span className="text-green-400 font-medium">{formatCurrency(income.amount)}</span>
+                      <span className="text-green-400 font-medium">{formatCurrency(incomeItem.amount)}</span>
                     </td>
                     <td className="py-4 px-4">
-                      <span className="text-slate-300">{formatDate(income.date)}</span>
+                      <span className="text-slate-300">{formatDate(new Date(incomeItem.date))}</span>
                     </td>
                     <td className="py-4 px-4">
-                      <span className="text-slate-300 text-sm">{income.description}</span>
+                      <span className="text-slate-300 text-sm">{incomeItem.description}</span>
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-2">
-                        <Link href={`/income/${income.id}`}>
+                        <Link href={`/income/${incomeItem.id}`}>
                           <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
                             <Eye className="h-4 w-4" />
                           </Button>
                         </Link>
-                        <Link href={`/income/${income.id}/edit`}>
+                        <Link href={`/income/${incomeItem.id}/edit`}>
                           <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
                             <Edit className="h-4 w-4" />
                           </Button>

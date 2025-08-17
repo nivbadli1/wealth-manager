@@ -10,6 +10,36 @@ import {
   PlusCircle, Search, Filter, Edit, Trash2, Eye, Building2, MapPin, DollarSign, Calendar, Loader2
 } from 'lucide-react'
 
+interface Property {
+  id: string
+  name: string
+  address: string
+  purchaseDate: string
+  purchasePrice: number
+  currentValue: number
+  propertyType: string
+  status: string
+  rentalIncomes: Array<{
+    id: string
+    amount: number
+    date: string
+    tenantName?: string
+  }>
+  propertyExpenses: Array<{
+    id: string
+    amount: number
+    date: string
+    category: string
+    description?: string
+  }>
+  mortgages: Array<{
+    id: string
+    bank: string
+    currentBalance: number
+    monthlyPayment: number
+  }>
+}
+
 // Mock data for demonstration
 const mockProperties = [
   {
@@ -85,7 +115,7 @@ const statusColors = {
 }
 
 export default function PropertiesPage() {
-  const [properties, setProperties] = useState([]) // eslint-disable-line @typescript-eslint/no-unused-vars
+  const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -156,7 +186,7 @@ export default function PropertiesPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-400 mb-1">סך הנכסים</p>
-                <p className="text-2xl font-bold text-white">{mockProperties.length}</p>
+                <p className="text-2xl font-bold text-white">{properties.length}</p>
               </div>
               <div className="p-3 bg-blue-500 rounded-lg">
                 <Building2 className="h-6 w-6 text-white" />
@@ -171,7 +201,7 @@ export default function PropertiesPage() {
               <div>
                 <p className="text-sm text-slate-400 mb-1">שווי כולל</p>
                 <p className="text-2xl font-bold text-white">
-                  {formatCurrency(mockProperties.reduce((sum, p) => sum + p.currentValue, 0))}
+                  {formatCurrency(properties.reduce((sum, p) => sum + p.currentValue, 0))}
                 </p>
               </div>
               <div className="p-3 bg-green-500 rounded-lg">
@@ -187,7 +217,7 @@ export default function PropertiesPage() {
               <div>
                 <p className="text-sm text-slate-400 mb-1">הכנסה חודשית</p>
                 <p className="text-2xl font-bold text-white">
-                  {formatCurrency(mockProperties.reduce((sum, p) => sum + p.monthlyRent, 0))}
+                  {formatCurrency(properties.reduce((sum, p) => sum + (p.rentalIncomes.length > 0 ? p.rentalIncomes[0].amount : 0), 0))}
                 </p>
               </div>
               <div className="p-3 bg-purple-500 rounded-lg">
@@ -203,7 +233,7 @@ export default function PropertiesPage() {
               <div>
                 <p className="text-sm text-slate-400 mb-1">נכסים מושכרים</p>
                 <p className="text-2xl font-bold text-white">
-                  {mockProperties.filter(p => p.status === 'rented').length}
+                  {properties.filter(p => p.status === 'rented').length}
                 </p>
               </div>
               <div className="p-3 bg-orange-500 rounded-lg">
@@ -249,12 +279,12 @@ export default function PropertiesPage() {
                 </tr>
               </thead>
               <tbody>
-                {mockProperties.map((property) => (
+                {properties.map((property) => (
                   <tr key={property.id} className="border-b border-slate-600 hover:bg-slate-700/50">
                     <td className="py-4 px-4">
                       <div>
                         <p className="font-medium text-white">{property.name}</p>
-                        <p className="text-sm text-slate-400">{formatDate(property.purchaseDate)}</p>
+                        <p className="text-sm text-slate-400">{formatDate(new Date(property.purchaseDate))}</p>
                       </div>
                     </td>
                     <td className="py-4 px-4">
@@ -276,7 +306,7 @@ export default function PropertiesPage() {
                     </td>
                     <td className="py-4 px-4">
                       <span className="text-white font-medium">
-                        {property.monthlyRent > 0 ? formatCurrency(property.monthlyRent) : '-'}
+                        {property.rentalIncomes.length > 0 ? formatCurrency(property.rentalIncomes[0].amount) : '-'}
                       </span>
                     </td>
                     <td className="py-4 px-4">
