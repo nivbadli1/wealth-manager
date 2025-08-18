@@ -55,24 +55,19 @@
 
 ## Database Setup
 
-### Migration from SQLite to PostgreSQL
+### Setup PostgreSQL Database
 
-1. **Install new dependencies:**
-   ```bash
-   npm install
-   ```
-
-2. **Generate Prisma client:**
+1. **Generate Prisma client:**
    ```bash
    npx prisma generate
    ```
 
-3. **Run migrations on production database:**
+2. **Push schema to production database:**
    ```bash
    npx prisma db push
    ```
 
-4. **Seed database (optional):**
+3. **Seed database (optional):**
    ```bash
    npx prisma db seed
    ```
