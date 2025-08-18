@@ -21,14 +21,30 @@ function getBreadcrumbs(pathname: string) {
     switch (segment) {
       case 'properties': label = 'נכסים'; break;
       case 'new': label = 'חדש'; break;
+      case 'edit': label = 'עריכה'; break;
       case 'investments': label = 'השקעות'; break;
       case 'income': label = 'הכנסות'; break;
       case 'expenses': label = 'הוצאות'; break;
       case 'reports': label = 'דוחות'; break;
       case 'settings': label = 'הגדרות'; break;
+      case 'data': label = 'ניהול נתונים'; break;
       default:
-        // Capitalize first letter for IDs or other dynamic segments
-        label = decodeURIComponent(segment);
+        // For dynamic segments (like property IDs), show a generic label
+        if (segment.match(/^[a-zA-Z0-9]{20,}$/)) {
+          // This looks like a database ID, show a generic label
+          const parentSegment = pathSegments[index - 1];
+          if (parentSegment === 'properties') {
+            label = 'פרטי נכס';
+          } else if (parentSegment === 'income') {
+            label = 'פרטי הכנסה';
+          } else if (parentSegment === 'expenses') {
+            label = 'פרטי הוצאה';
+          } else {
+            label = 'פרטים';
+          }
+        } else {
+          label = decodeURIComponent(segment);
+        }
         break;
     }
     breadcrumbs.push({ label, href })

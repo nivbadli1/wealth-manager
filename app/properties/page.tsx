@@ -139,6 +139,29 @@ export default function PropertiesPage() {
     }
   }
 
+  const handleDelete = async (propertyId: string, propertyName: string) => {
+    if (!confirm(`האם אתה בטוח שברצונך למחוק את הנכס "${propertyName}"?`)) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/properties/${propertyId}`, {
+        method: 'DELETE'
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete property')
+      }
+
+      // Remove the deleted property from the list
+      setProperties(prev => prev.filter(p => p.id !== propertyId))
+      alert('הנכס נמחק בהצלחה!')
+    } catch (error) {
+      console.error('Error deleting property:', error)
+      alert('שגיאה במחיקת הנכס')
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -311,17 +334,24 @@ export default function PropertiesPage() {
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-2">
-                        <Link href={`/properties/${property.id}`}>
-                          <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
-                            <Eye className="h-4 w-4" />
-                          </Button>
+                        <Link 
+                          href={`/properties/${property.id}`}
+                          className="inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+                        >
+                          <Eye className="h-4 w-4" />
                         </Link>
-                        <Link href={`/properties/${property.id}/edit`}>
-                          <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
-                            <Edit className="h-4 w-4" />
-                          </Button>
+                        <Link 
+                          href={`/properties/${property.id}/edit`}
+                          className="inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+                        >
+                          <Edit className="h-4 w-4" />
                         </Link>
-                        <Button variant="ghost" size="sm" className="text-red-400 hover:text-red-300">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="text-red-400 hover:text-red-300"
+                          onClick={() => handleDelete(property.id, property.name)}
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
