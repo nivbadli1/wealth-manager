@@ -5,12 +5,13 @@ import { propertySchema } from '@/lib/validations'
 // GET /api/properties/[id] - Get a single property
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const property = await prisma.property.findUnique({
       where: {
-        id: params.id
+        id
       },
       include: {
         RentalIncome: true,
@@ -39,9 +40,10 @@ export async function GET(
 // PUT /api/properties/[id] - Update a property
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await request.json()
     
     // Validate the input data
@@ -53,7 +55,7 @@ export async function PUT(
 
     // Check if property exists
     const existingProperty = await prisma.property.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!existingProperty) {
@@ -66,7 +68,7 @@ export async function PUT(
     // Update the property
     const updatedProperty = await prisma.property.update({
       where: {
-        id: params.id
+        id
       },
       data: {
         ...validatedData,
@@ -101,12 +103,13 @@ export async function PUT(
 // DELETE /api/properties/[id] - Delete a property
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     // Check if property exists
     const existingProperty = await prisma.property.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!existingProperty) {
@@ -119,7 +122,7 @@ export async function DELETE(
     // Delete the property (cascade will handle related records)
     await prisma.property.delete({
       where: {
-        id: params.id
+        id
       }
     })
 

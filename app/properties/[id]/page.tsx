@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, use } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
-  Edit, Trash2, MapPin, Calendar, DollarSign, User, FileText, AlertCircle
+  Edit, Trash2, MapPin, DollarSign, User, AlertCircle
 } from 'lucide-react'
 
 interface Property {
@@ -61,7 +61,8 @@ const statusColors = {
   'owner-occupied': 'bg-blue-100 text-blue-800',
 }
 
-export default function PropertyDetailPage({ params }: { params: { id: string } }) {
+export default function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const [property, setProperty] = useState<Property | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -70,7 +71,7 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const response = await fetch(`/api/properties/${params.id}`)
+        const response = await fetch(`/api/properties/${id}`)
         if (!response.ok) {
           throw new Error('Failed to fetch property')
         }
@@ -85,12 +86,12 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
     }
 
     fetchProperty()
-  }, [params.id])
+  }, [id])
 
   const handleDelete = async () => {
     // First test - just show an alert to verify onClick works
-    alert('Delete button clicked! Property ID: ' + params.id)
-    console.log('Delete button clicked for property:', params.id)
+    alert('Delete button clicked! Property ID: ' + id)
+    console.log('Delete button clicked for property:', id)
     
     if (!confirm('האם אתה בטוח שברצונך למחוק את הנכס?')) {
       console.log('Delete cancelled by user')
@@ -98,8 +99,8 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
     }
 
     try {
-      console.log('Sending delete request for:', params.id)
-      const response = await fetch(`/api/properties/${params.id}`, {
+      console.log('Sending delete request for:', id)
+      const response = await fetch(`/api/properties/${id}`, {
         method: 'DELETE'
       })
 
@@ -337,13 +338,13 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
               <CardTitle className="text-white">פעולות מהירות</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Link href={`/properties/${params.id}/income/new`}>
+              <Link href={`/properties/${id}/income/new`}>
                 <Button variant="outline" className="w-full btn-secondary">
                   <DollarSign className="h-4 w-4 ml-2" />
                   הוסף הכנסה לנכס
                 </Button>
               </Link>
-              <Link href={`/properties/${params.id}/expenses/new`}>
+              <Link href={`/properties/${id}/expenses/new`}>
                 <Button variant="outline" className="w-full btn-secondary">
                   <AlertCircle className="h-4 w-4 ml-2" />
                   הוסף הוצאה לנכס

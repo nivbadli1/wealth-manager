@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, use } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowRight, Save, X } from 'lucide-react'
+import { Save, X } from 'lucide-react'
 
 interface Property {
   id: string
@@ -16,7 +16,8 @@ interface Property {
   address: string
 }
 
-export default function AddPropertyIncomePage({ params }: { params: { id: string } }) {
+export default function AddPropertyIncomePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const [property, setProperty] = useState<Property | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -33,7 +34,7 @@ export default function AddPropertyIncomePage({ params }: { params: { id: string
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const response = await fetch(`/api/properties/${params.id}`)
+        const response = await fetch(`/api/properties/${id}`)
         if (!response.ok) {
           throw new Error('Failed to fetch property')
         }
@@ -48,7 +49,7 @@ export default function AddPropertyIncomePage({ params }: { params: { id: string
     }
 
     fetchProperty()
-  }, [params.id])
+  }, [id])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -61,7 +62,7 @@ export default function AddPropertyIncomePage({ params }: { params: { id: string
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          propertyId: params.id,
+          propertyId: id,
           amount: parseFloat(formData.amount),
           date: formData.date,
           tenantName: formData.tenantName || undefined,
@@ -73,7 +74,7 @@ export default function AddPropertyIncomePage({ params }: { params: { id: string
         throw new Error('Failed to create income')
       }
 
-      router.push(`/properties/${params.id}`)
+      router.push(`/properties/${id}`)
     } catch (error) {
       console.error('Error creating income:', error)
       setError('שגיאה ביצירת ההכנסה')
@@ -114,7 +115,7 @@ export default function AddPropertyIncomePage({ params }: { params: { id: string
           <h1 className="text-3xl font-semibold text-white mb-2">הוסף הכנסה לנכס</h1>
           <p className="text-slate-400">{property.name} - {property.address}</p>
         </div>
-        <Link href={`/properties/${params.id}`}>
+        <Link href={`/properties/${id}`}>
           <Button variant="outline" className="btn-secondary">
             <X className="h-4 w-4 ml-2" />
             ביטול
@@ -186,7 +187,7 @@ export default function AddPropertyIncomePage({ params }: { params: { id: string
             </div>
 
             <div className="flex items-center justify-end gap-4 pt-6">
-              <Link href={`/properties/${params.id}`}>
+              <Link href={`/properties/${id}`}>
                 <Button type="button" variant="outline" className="btn-secondary">
                   <X className="h-4 w-4 ml-2" />
                   ביטול

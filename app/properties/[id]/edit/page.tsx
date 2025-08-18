@@ -1,15 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, use } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
+// import { Select } from '@/components/ui/select'
+// import { Textarea } from '@/components/ui/textarea'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowRight, Save, X } from 'lucide-react'
+import { Save, X } from 'lucide-react'
 
 interface Property {
   id: string
@@ -22,7 +22,8 @@ interface Property {
   status: string
 }
 
-export default function EditPropertyPage({ params }: { params: { id: string } }) {
+export default function EditPropertyPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const [property, setProperty] = useState<Property | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -42,7 +43,7 @@ export default function EditPropertyPage({ params }: { params: { id: string } })
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const response = await fetch(`/api/properties/${params.id}`)
+        const response = await fetch(`/api/properties/${id}`)
         if (!response.ok) {
           throw new Error('Failed to fetch property')
         }
@@ -70,14 +71,14 @@ export default function EditPropertyPage({ params }: { params: { id: string } })
     }
 
     fetchProperty()
-  }, [params.id])
+  }, [id])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSaving(true)
 
     try {
-      const response = await fetch(`/api/properties/${params.id}`, {
+      const response = await fetch(`/api/properties/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -93,7 +94,7 @@ export default function EditPropertyPage({ params }: { params: { id: string } })
         throw new Error('Failed to update property')
       }
 
-      router.push(`/properties/${params.id}`)
+      router.push(`/properties/${id}`)
     } catch (error) {
       console.error('Error updating property:', error)
       setError('שגיאה בעדכון הנכס')
@@ -134,7 +135,7 @@ export default function EditPropertyPage({ params }: { params: { id: string } })
           <h1 className="text-3xl font-semibold text-white mb-2">ערוך נכס</h1>
           <p className="text-slate-400">עדכן את פרטי הנכס</p>
         </div>
-        <Link href={`/properties/${params.id}`}>
+        <Link href={`/properties/${id}`}>
           <Button variant="outline" className="btn-secondary">
             <X className="h-4 w-4 ml-2" />
             ביטול
@@ -256,7 +257,7 @@ export default function EditPropertyPage({ params }: { params: { id: string } })
             </div>
 
             <div className="flex items-center justify-end gap-4 pt-6">
-              <Link href={`/properties/${params.id}`}>
+              <Link href={`/properties/${id}`}>
                 <Button type="button" variant="outline" className="btn-secondary">
                   <X className="h-4 w-4 ml-2" />
                   ביטול

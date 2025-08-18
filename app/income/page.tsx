@@ -20,48 +20,48 @@ interface Income {
 }
 
 // Mock data for demonstration
-const mockIncome = [
-  {
-    id: '1',
-    source: 'משכורת חודשית',
-    amount: 15000,
-    date: new Date('2024-07-01'),
-    category: 'salary',
-    description: 'משכורת חודשית מחברת היי-טק',
-  },
-  {
-    id: '2',
-    source: 'הכנסה מהשקעות',
-    amount: 5000,
-    date: new Date('2024-07-15'),
-    category: 'investment',
-    description: 'דיבידנדים ממניות',
-  },
-  {
-    id: '3',
-    source: 'פרויקט ייעוץ',
-    amount: 8000,
-    date: new Date('2024-07-10'),
-    category: 'freelance',
-    description: 'ייעוץ לחברת סטארט-אפ',
-  },
-  {
-    id: '4',
-    source: 'דמי שכירות',
-    amount: 12000,
-    date: new Date('2024-07-01'),
-    category: 'rental',
-    description: 'דמי שכירות נכסים',
-  },
-  {
-    id: '5',
-    source: 'הכנסה נוספת',
-    amount: 3000,
-    date: new Date('2024-07-20'),
-    category: 'other',
-    description: 'הכנסה ממכירת ציוד',
-  },
-]
+// const mockIncome = [
+//   {
+//     id: '1',
+//     source: 'משכורת חודשית',
+//     amount: 15000,
+//     date: new Date('2024-07-01'),
+//     category: 'salary',
+//     description: 'משכורת חודשית מחברת היי-טק',
+//   },
+//   {
+//     id: '2',
+//     source: 'הכנסה מהשקעות',
+//     amount: 5000,
+//     date: new Date('2024-07-15'),
+//     category: 'investment',
+//     description: 'דיבידנדים ממניות',
+//   },
+//   {
+//     id: '3',
+//     source: 'פרויקט ייעוץ',
+//     amount: 8000,
+//     date: new Date('2024-07-10'),
+//     category: 'freelance',
+//     description: 'ייעוץ לחברת סטארט-אפ',
+//   },
+//   {
+//     id: '4',
+//     source: 'דמי שכירות',
+//     amount: 12000,
+//     date: new Date('2024-07-01'),
+//     category: 'rental',
+//     description: 'דמי שכירות נכסים',
+//   },
+//   {
+//     id: '5',
+//     source: 'הכנסה נוספת',
+//     amount: 3000,
+//     date: new Date('2024-07-20'),
+//     category: 'other',
+//     description: 'הכנסה ממכירת ציוד',
+//   },
+// ]
 
 const categoryLabels = {
   salary: 'משכורת',
