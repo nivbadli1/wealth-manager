@@ -287,81 +287,135 @@ export default function PropertiesPage() {
             </Button>
           </div>
 
-          {/* Properties Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[800px]">
+          {/* Mobile Card Layout */}
+          <div className="block lg:hidden space-y-4">
+            {properties.map((property) => (
+              <div key={property.id} className="bg-slate-700 rounded-lg p-4 border border-slate-600">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-white text-base mb-1">{property.name}</h3>
+                    <div className="flex items-center text-xs text-slate-400 mb-2">
+                      <MapPin className="h-3 w-3 ml-1" />
+                      <span>{property.address}</span>
+                    </div>
+                    <p className="text-xs text-slate-400">{formatDate(new Date(property.purchaseDate))}</p>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Link 
+                      href={`/properties/${property.id}`}
+                      className="inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-400 hover:text-white hover:bg-slate-600 transition-colors"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Link>
+                    <Link 
+                      href={`/properties/${property.id}/edit`}
+                      className="inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-400 hover:text-white hover:bg-slate-600 transition-colors"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Link>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-red-400 hover:text-red-300 p-2 h-8 w-8"
+                      onClick={() => handleDelete(property.id, property.name)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs text-slate-400 mb-1">סוג נכס</p>
+                    <p className="text-sm text-white">{propertyTypeLabels[property.propertyType as keyof typeof propertyTypeLabels]}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-400 mb-1">סטטוס</p>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[property.status as keyof typeof statusColors]}`}>
+                      {statusLabels[property.status as keyof typeof statusLabels]}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-400 mb-1">שווי נוכחי</p>
+                    <p className="text-sm font-semibold text-white">{formatCurrency(property.currentValue)}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-400 mb-1">דמי שכירות</p>
+                    <p className="text-sm font-semibold text-white">
+                      {property.RentalIncome.length > 0 ? formatCurrency(property.RentalIncome[0].amount) : '-'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table Layout */}
+          <div className="hidden lg:block overflow-x-auto">
+            <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-600">
-                  <th className="text-right py-3 px-2 sm:px-4 text-sm font-semibold text-slate-300">שם הנכס</th>
-                  <th className="text-right py-3 px-2 sm:px-4 text-sm font-semibold text-slate-300 hidden sm:table-cell">כתובת</th>
-                  <th className="text-right py-3 px-2 sm:px-4 text-sm font-semibold text-slate-300">סוג</th>
-                  <th className="text-right py-3 px-2 sm:px-4 text-sm font-semibold text-slate-300">סטטוס</th>
-                  <th className="text-right py-3 px-2 sm:px-4 text-sm font-semibold text-slate-300">שווי נוכחי</th>
-                  <th className="text-right py-3 px-2 sm:px-4 text-sm font-semibold text-slate-300 hidden md:table-cell">דמי שכירות</th>
-                  <th className="text-right py-3 px-2 sm:px-4 text-sm font-semibold text-slate-300">פעולות</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-slate-300">שם הנכס</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-slate-300">כתובת</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-slate-300">סוג</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-slate-300">סטטוס</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-slate-300">שווי נוכחי</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-slate-300">דמי שכירות</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-slate-300">פעולות</th>
                 </tr>
               </thead>
               <tbody>
                 {properties.map((property) => (
                   <tr key={property.id} className="border-b border-slate-600 hover:bg-slate-700/50">
-                    <td className="py-4 px-2 sm:px-4">
+                    <td className="py-4 px-4">
                       <div>
-                        <p className="font-medium text-white text-sm sm:text-base">{property.name}</p>
-                        <p className="text-xs sm:text-sm text-slate-400">{formatDate(new Date(property.purchaseDate))}</p>
-                        {/* Show address on mobile */}
-                        <p className="text-xs text-slate-400 sm:hidden mt-1 flex items-center">
-                          <MapPin className="h-3 w-3 ml-1" />
-                          {property.address}
-                        </p>
+                        <p className="font-medium text-white">{property.name}</p>
+                        <p className="text-sm text-slate-400">{formatDate(new Date(property.purchaseDate))}</p>
                       </div>
                     </td>
-                    <td className="py-4 px-2 sm:px-4 hidden sm:table-cell">
+                    <td className="py-4 px-4">
                       <div className="flex items-center">
                         <MapPin className="h-4 w-4 text-slate-400 ml-2" />
-                        <span className="text-slate-300 text-sm">{property.address}</span>
+                        <span className="text-slate-300">{property.address}</span>
                       </div>
                     </td>
-                    <td className="py-4 px-2 sm:px-4">
-                      <span className="text-slate-300 text-sm">{propertyTypeLabels[property.propertyType as keyof typeof propertyTypeLabels]}</span>
+                    <td className="py-4 px-4">
+                      <span className="text-slate-300">{propertyTypeLabels[property.propertyType as keyof typeof propertyTypeLabels]}</span>
                     </td>
-                    <td className="py-4 px-2 sm:px-4">
+                    <td className="py-4 px-4">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[property.status as keyof typeof statusColors]}`}>
                         {statusLabels[property.status as keyof typeof statusLabels]}
                       </span>
                     </td>
-                    <td className="py-4 px-2 sm:px-4">
-                      <span className="text-white font-medium text-sm">{formatCurrency(property.currentValue)}</span>
-                      {/* Show rental income on mobile */}
-                      <p className="text-xs text-slate-400 md:hidden mt-1">
-                        שכירות: {property.RentalIncome.length > 0 ? formatCurrency(property.RentalIncome[0].amount) : '-'}
-                      </p>
+                    <td className="py-4 px-4">
+                      <span className="text-white font-medium">{formatCurrency(property.currentValue)}</span>
                     </td>
-                    <td className="py-4 px-2 sm:px-4 hidden md:table-cell">
-                      <span className="text-white font-medium text-sm">
+                    <td className="py-4 px-4">
+                      <span className="text-white font-medium">
                         {property.RentalIncome.length > 0 ? formatCurrency(property.RentalIncome[0].amount) : '-'}
                       </span>
                     </td>
-                    <td className="py-4 px-2 sm:px-4">
-                      <div className="flex items-center gap-1 sm:gap-2">
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-2">
                         <Link 
                           href={`/properties/${property.id}`}
                           className="inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
                         >
-                          <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+                          <Eye className="h-4 w-4" />
                         </Link>
                         <Link 
                           href={`/properties/${property.id}/edit`}
                           className="inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
                         >
-                          <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+                          <Edit className="h-4 w-4" />
                         </Link>
                         <Button 
                           variant="ghost" 
                           size="sm" 
-                          className="text-red-400 hover:text-red-300 p-2"
+                          className="text-red-400 hover:text-red-300"
                           onClick={() => handleDelete(property.id, property.name)}
                         >
-                          <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </td>
