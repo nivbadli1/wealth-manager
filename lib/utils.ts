@@ -5,6 +5,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+// Legacy formatCurrency function for backwards compatibility
+// New components should use the formatCurrency from LocalizationContext
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('he-IL', {
     style: 'currency',

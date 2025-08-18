@@ -6,48 +6,52 @@ import { cn } from '@/lib/utils'
 import {
   Building2, LayoutDashboard, LandPlot, PiggyBank, ReceiptText, BarChart3, Settings, PlusCircle, Banknote, Database, X,
 } from 'lucide-react'
+import { useLocalization } from '@/contexts/LocalizationContext'
+import { TranslationKey } from '@/lib/translations'
 
-const navigation = [
-  { name: 'דשבורד', href: '/', icon: LayoutDashboard },
-  {
-    name: 'נכסים',
-    href: '/properties',
-    icon: LandPlot,
-    subItems: [
-      { name: 'כל הנכסים', href: '/properties' },
-      { name: 'הוסף נכס', href: '/properties/new' },
-    ],
-  },
-  {
-    name: 'השקעות',
-    href: '/investments',
-    icon: PiggyBank,
-    subItems: [
-      { name: 'כל ההשקעות', href: '/investments' },
-      { name: 'הוסף השקעה', href: '/investments/new' },
-    ],
-  },
-  {
-    name: 'הכנסות',
-    href: '/income',
-    icon: Banknote,
-    subItems: [
-      { name: 'כל ההכנסות', href: '/income' },
-      { name: 'הוסף הכנסה', href: '/income/new' },
-    ],
-  },
-  {
-    name: 'הוצאות',
-    href: '/expenses',
-    icon: ReceiptText,
-    subItems: [
-      { name: 'כל ההוצאות', href: '/expenses' },
-      { name: 'הוסף הוצאה', href: '/expenses/new' },
-    ],
-  },
-  { name: 'דוחות וניתוח', href: '/reports', icon: BarChart3 },
-  { name: 'ניהול נתונים', href: '/data', icon: Database },
-]
+function getNavigation(t: (key: TranslationKey) => string) {
+  return [
+    { name: t('dashboard'), href: '/', icon: LayoutDashboard },
+    {
+      name: t('properties'),
+      href: '/properties',
+      icon: LandPlot,
+      subItems: [
+        { name: t('allProperties'), href: '/properties' },
+        { name: t('addProperty'), href: '/properties/new' },
+      ],
+    },
+    {
+      name: t('investments'),
+      href: '/investments',
+      icon: PiggyBank,
+      subItems: [
+        { name: t('allInvestments'), href: '/investments' },
+        { name: t('addInvestment'), href: '/investments/new' },
+      ],
+    },
+    {
+      name: t('income'),
+      href: '/income',
+      icon: Banknote,
+      subItems: [
+        { name: t('allIncome'), href: '/income' },
+        { name: t('addIncome'), href: '/income/new' },
+      ],
+    },
+    {
+      name: t('expenses'),
+      href: '/expenses',
+      icon: ReceiptText,
+      subItems: [
+        { name: t('allExpenses'), href: '/expenses' },
+        { name: t('addExpense'), href: '/expenses/new' },
+      ],
+    },
+    { name: t('reports'), href: '/reports', icon: BarChart3 },
+    { name: t('dataManagement'), href: '/data', icon: Database },
+  ]
+}
 
 interface SidebarProps {
   onClose?: () => void
@@ -55,6 +59,8 @@ interface SidebarProps {
 
 export function Sidebar({ onClose }: SidebarProps) {
   const pathname = usePathname()
+  const { t } = useLocalization()
+  const navigation = getNavigation(t)
 
   return (
     <div className="fixed inset-y-0 right-0 w-64 bg-slate-800 border-l border-slate-600 shadow-lg z-40">
@@ -65,7 +71,7 @@ export function Sidebar({ onClose }: SidebarProps) {
             <div className="p-2 bg-blue-500 rounded-lg">
               <Building2 className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-white">ניהול עושר</span>
+            <span className="text-xl font-bold text-white">{t('wealthManagement')}</span>
           </div>
           {/* Mobile close button */}
           {onClose && (
@@ -123,14 +129,14 @@ export function Sidebar({ onClose }: SidebarProps) {
         {/* Quick Actions */}
         <div className="p-4 border-t border-slate-600 bg-slate-700">
           <div className="space-y-2">
-            <h4 className="text-xs font-semibold text-slate-400 mb-2 uppercase">פעולות מהירות</h4>
+            <h4 className="text-xs font-semibold text-slate-400 mb-2 uppercase">{t('quickActions')}</h4>
             <Link
               href="/properties/new"
               className="flex items-center gap-2 text-sm text-slate-300 hover:text-white hover:bg-slate-600 px-3 py-2 rounded-lg transition-colors duration-200 font-medium"
               onClick={() => onClose?.()}
             >
               <PlusCircle className="h-4 w-4 text-slate-400" />
-              הוסף נכס
+              {t('addProperty')}
             </Link>
             <Link
               href="/income/new" 
@@ -138,7 +144,7 @@ export function Sidebar({ onClose }: SidebarProps) {
               onClick={() => onClose?.()}
             >
               <PlusCircle className="h-4 w-4 text-slate-400" />
-              הוסף הכנסה
+              {t('addIncome')}
             </Link>
             <Link
               href="/expenses/new"
@@ -146,7 +152,7 @@ export function Sidebar({ onClose }: SidebarProps) {
               onClick={() => onClose?.()}
             >
               <PlusCircle className="h-4 w-4 text-slate-400" />
-              הוסף הוצאה
+              {t('addExpense')}
             </Link>
           </div>
         </div>
@@ -159,7 +165,7 @@ export function Sidebar({ onClose }: SidebarProps) {
             onClick={() => onClose?.()}
           >
             <Settings className="h-5 w-5 text-slate-400" />
-            <span className="font-medium">הגדרות</span>
+            <span className="font-medium">{t('settings')}</span>
           </Link>
         </div>
       </div>

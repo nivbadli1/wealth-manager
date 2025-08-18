@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { formatCurrency } from '@/lib/utils'
 import Link from 'next/link'
 import {
   TrendingUp, Building2, LandPlot, PiggyBank, Banknote, ReceiptText, PlusCircle
@@ -10,6 +9,7 @@ import {
 import { MonthlyChart } from '@/components/charts/MonthlyChart'
 import { PropertyDistributionChart } from '@/components/charts/PropertyDistributionChart'
 import { RecentActivity } from '@/components/dashboard/RecentActivity'
+import { useLocalization } from '@/contexts/LocalizationContext'
 
 interface DashboardData {
   kpi: {
@@ -72,6 +72,7 @@ interface KPICardProps {
 }
 
 function KPICard({ title, value, description, icon: Icon, trend, iconBgColor, href }: KPICardProps) {
+  const { formatCurrency } = useLocalization()
   const CardWrapper = ({ children }: { children: React.ReactNode }) => {
     if (href) {
       return (
@@ -137,6 +138,7 @@ function QuickActionCard({ title, description, icon: Icon, href }: {
 }
 
 export default function Dashboard() {
+  const { t } = useLocalization()
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -165,8 +167,8 @@ export default function Dashboard() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-semibold text-white mb-2">דשבורד נתונים פיננסיים</h1>
-          <p className="text-slate-400">טוען נתונים...</p>
+          <h1 className="text-3xl font-semibold text-white mb-2">{t('financialDashboard')}</h1>
+          <p className="text-slate-400">{t('loadingData')}</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -189,8 +191,8 @@ export default function Dashboard() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-semibold text-white mb-2">דשבורד נתונים פיננסיים</h1>
-          <p className="text-red-400">שגיאה בטעינת הנתונים: {error}</p>
+          <h1 className="text-3xl font-semibold text-white mb-2">{t('financialDashboard')}</h1>
+          <p className="text-red-400">{t('dataError')}: {error}</p>
         </div>
       </div>
     )
@@ -200,8 +202,8 @@ export default function Dashboard() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-semibold text-white mb-2">דשבורד נתונים פיננסיים</h1>
-          <p className="text-slate-400">אין נתונים זמינים</p>
+          <h1 className="text-3xl font-semibold text-white mb-2">{t('financialDashboard')}</h1>
+          <p className="text-slate-400">{t('noDataAvailable')}</p>
         </div>
       </div>
     )
@@ -209,13 +211,13 @@ export default function Dashboard() {
 
   // Prepare chart data
   const propertyTypeData = Object.entries(dashboardData.charts.propertyTypeDistribution).map(([key, value]) => ({
-    name: key === 'apartment' ? 'דירה' : key === 'house' ? 'בית פרטי' : 'מסחרי',
+    name: key === 'apartment' ? t('apartment') : key === 'house' ? t('house') : t('commercial'),
     value,
     color: key === 'apartment' ? '#3b82f6' : key === 'house' ? '#10b981' : '#f59e0b'
   }))
 
   const propertyStatusData = Object.entries(dashboardData.charts.propertyStatusDistribution).map(([key, value]) => ({
-    name: key === 'rented' ? 'מושכר' : key === 'vacant' ? 'פנוי' : 'בבעלות',
+    name: key === 'rented' ? t('rented') : key === 'vacant' ? t('vacant') : t('owned'),
     value,
     color: key === 'rented' ? '#10b981' : key === 'vacant' ? '#f59e0b' : '#3b82f6'
   }))
@@ -243,43 +245,43 @@ export default function Dashboard() {
     <div className="space-y-6 sm:space-y-8">
       {/* Page Header */}
       <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-semibold text-white mb-2">דשבורד נתונים פיננסיים</h1>
-        <p className="text-slate-400 text-sm sm:text-base">מבט כולל על הנכסים, ההכנסות וההשקעות שלך</p>
+        <h1 className="text-2xl sm:text-3xl font-semibold text-white mb-2">{t('financialDashboard')}</h1>
+        <p className="text-slate-400 text-sm sm:text-base">{t('overallView')}</p>
       </div>
 
       {/* KPI Cards Grid - Responsive */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <KPICard
-          title="הכנסה חודשית"
+          title={t('monthlyIncome')}
           value={dashboardData.kpi.monthlyRentalIncome}
-          description="הכנסות שכירות חודשיות"
+          description={t('monthlyRentalIncome')}
           icon={Banknote}
           trend={{ value: dashboardData.kpi.monthlyGrowth, isPositive: true }}
           iconBgColor="bg-blue-500"
           href="/income"
         />
         <KPICard
-          title="סך הנכסים"
+          title={t('totalAssets')}
           value={dashboardData.kpi.netWorth}
-          description="שווי נטו כולל"
+          description={t('totalNetWorth')}
           icon={Building2}
           trend={{ value: dashboardData.kpi.propertyGrowth, isPositive: true }}
           iconBgColor="bg-green-500"
           href="/properties"
         />
         <KPICard
-          title="נכסים"
+          title={t('totalProperties')}
           value={dashboardData.kpi.totalProperties}
-          description="מספר נכסים בבעלות"
+          description={t('propertiesOwned')}
           icon={LandPlot}
           trend={{ value: dashboardData.kpi.propertyGrowth, isPositive: true }}
           iconBgColor="bg-orange-500"
           href="/properties"
         />
         <KPICard
-          title="השקעות"
+          title={t('totalInvestments')}
           value={dashboardData.kpi.totalInvestmentsValue}
-          description="סך ההשקעות הפיננסיות"
+          description={t('totalInvestmentsValue')}
           icon={PiggyBank}
           trend={{ value: dashboardData.kpi.investmentGrowth, isPositive: true }}
           iconBgColor="bg-purple-500"
@@ -291,7 +293,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
         <Card className="card">
           <CardHeader>
-            <CardTitle className="text-white">הכנסות והוצאות חודשיות</CardTitle>
+            <CardTitle className="text-white">{t('monthlyIncomeExpenses')}</CardTitle>
           </CardHeader>
           <CardContent>
             <MonthlyChart data={dashboardData.charts.monthlyData} />
@@ -303,7 +305,7 @@ export default function Dashboard() {
             <CardContent className="p-4 sm:p-6">
               <PropertyDistributionChart 
                 data={propertyTypeData} 
-                title="התפלגות סוגי נכסים" 
+                title={t('propertyTypeDistribution')} 
               />
             </CardContent>
           </Card>
@@ -312,7 +314,7 @@ export default function Dashboard() {
             <CardContent className="p-4 sm:p-6">
               <PropertyDistributionChart 
                 data={propertyStatusData} 
-                title="סטטוס נכסים" 
+                title={t('propertyStatus')} 
               />
             </CardContent>
           </Card>
@@ -321,23 +323,23 @@ export default function Dashboard() {
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">פעולות מהירות</h2>
+        <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">{t('quickActions')}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           <QuickActionCard
-            title="הוסף נכס חדש"
-            description="הוסף נכס נדל״ן חדש למערכת"
+            title={t('addNewProperty')}
+            description={t('addNewPropertyDesc')}
             icon={PlusCircle}
             href="/properties/new"
           />
           <QuickActionCard
-            title="הוסף הכנסה"
-            description="תעד הכנסה חדשה"
+            title={t('addIncome')}
+            description={t('addIncomeDesc')}
             icon={Banknote}
             href="/income/new"
           />
           <QuickActionCard
-            title="הוסף הוצאה"
-            description="תעד הוצאה חדשה"
+            title={t('addExpense')}
+            description={t('addExpenseDesc')}
             icon={ReceiptText}
             href="/expenses/new"
           />
