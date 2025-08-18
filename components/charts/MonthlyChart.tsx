@@ -33,17 +33,19 @@ export function MonthlyChart({ data }: MonthlyChartProps) {
 
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+      <LineChart data={data} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
         <XAxis 
           dataKey="month" 
           stroke="#cbd5e1"
-          fontSize={12}
+          fontSize={10}
+          interval="preserveStartEnd"
         />
         <YAxis 
           stroke="#cbd5e1"
-          fontSize={12}
+          fontSize={10}
           tickFormatter={(value) => formatCurrency(value).replace('₪', '')}
+          width={60}
         />
         <Tooltip content={<CustomTooltip />} />
         <Legend />
@@ -53,7 +55,7 @@ export function MonthlyChart({ data }: MonthlyChartProps) {
           stroke="#10b981" 
           strokeWidth={2}
           name="הכנסות"
-          dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
+          dot={{ fill: '#10b981', strokeWidth: 2, r: 3 }}
         />
         <Line 
           type="monotone" 
@@ -61,7 +63,7 @@ export function MonthlyChart({ data }: MonthlyChartProps) {
           stroke="#ef4444" 
           strokeWidth={2}
           name="הוצאות"
-          dot={{ fill: '#ef4444', strokeWidth: 2, r: 4 }}
+          dot={{ fill: '#ef4444', strokeWidth: 2, r: 3 }}
         />
         <Line 
           type="monotone" 
@@ -69,7 +71,7 @@ export function MonthlyChart({ data }: MonthlyChartProps) {
           stroke="#3b82f6" 
           strokeWidth={2}
           name="רווח נטו"
-          dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
+          dot={{ fill: '#3b82f6', strokeWidth: 2, r: 3 }}
         />
       </LineChart>
     </ResponsiveContainer>

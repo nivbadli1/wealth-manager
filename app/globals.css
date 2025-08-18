@@ -82,9 +82,9 @@ body {
     @apply text-blue-400 bg-slate-700 font-semibold;
   }
 
-  /* Professional dark KPI cards - EXACT h-40 height */
+  /* Professional dark KPI cards - Responsive height */
   .kpi-card {
-    @apply bg-slate-800 border border-slate-600 rounded-xl p-6 h-40 hover:bg-slate-700/50 transition-all duration-200;
+    @apply bg-slate-800 border border-slate-600 rounded-xl p-4 sm:p-6 h-36 sm:h-40 hover:bg-slate-700/50 transition-all duration-200;
   }
 
   /* Professional text styles */
@@ -153,11 +153,32 @@ body {
   }
   
   .card {
-    @apply p-4;
+    @apply p-3 sm:p-4;
   }
   
   .sidebar-item {
     @apply px-3 py-2;
+  }
+  
+  /* Smaller buttons on mobile */
+  .btn-primary, .btn-secondary, .btn-danger {
+    @apply py-2 px-3 text-sm;
+  }
+  
+  /* Smaller KPI card icons on mobile */
+  .kpi-card .icon {
+    @apply h-8 w-8 p-2;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .kpi-card {
+    @apply h-32 p-3;
+  }
+  
+  .chart-container {
+    @apply h-64 p-2;
   }
 }
 

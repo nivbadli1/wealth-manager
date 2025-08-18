@@ -304,55 +304,64 @@ export default function PropertiesPage() {
               <tbody>
                 {properties.map((property) => (
                   <tr key={property.id} className="border-b border-slate-600 hover:bg-slate-700/50">
-                    <td className="py-4 px-4">
+                    <td className="py-4 px-2 sm:px-4">
                       <div>
-                        <p className="font-medium text-white">{property.name}</p>
-                        <p className="text-sm text-slate-400">{formatDate(new Date(property.purchaseDate))}</p>
+                        <p className="font-medium text-white text-sm sm:text-base">{property.name}</p>
+                        <p className="text-xs sm:text-sm text-slate-400">{formatDate(new Date(property.purchaseDate))}</p>
+                        {/* Show address on mobile */}
+                        <p className="text-xs text-slate-400 sm:hidden mt-1 flex items-center">
+                          <MapPin className="h-3 w-3 ml-1" />
+                          {property.address}
+                        </p>
                       </div>
                     </td>
-                    <td className="py-4 px-4">
+                    <td className="py-4 px-2 sm:px-4 hidden sm:table-cell">
                       <div className="flex items-center">
                         <MapPin className="h-4 w-4 text-slate-400 ml-2" />
-                        <span className="text-slate-300">{property.address}</span>
+                        <span className="text-slate-300 text-sm">{property.address}</span>
                       </div>
                     </td>
-                    <td className="py-4 px-4">
-                      <span className="text-slate-300">{propertyTypeLabels[property.propertyType as keyof typeof propertyTypeLabels]}</span>
+                    <td className="py-4 px-2 sm:px-4">
+                      <span className="text-slate-300 text-sm">{propertyTypeLabels[property.propertyType as keyof typeof propertyTypeLabels]}</span>
                     </td>
-                    <td className="py-4 px-4">
+                    <td className="py-4 px-2 sm:px-4">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[property.status as keyof typeof statusColors]}`}>
                         {statusLabels[property.status as keyof typeof statusLabels]}
                       </span>
                     </td>
-                    <td className="py-4 px-4">
-                      <span className="text-white font-medium">{formatCurrency(property.currentValue)}</span>
+                    <td className="py-4 px-2 sm:px-4">
+                      <span className="text-white font-medium text-sm">{formatCurrency(property.currentValue)}</span>
+                      {/* Show rental income on mobile */}
+                      <p className="text-xs text-slate-400 md:hidden mt-1">
+                        שכירות: {property.RentalIncome.length > 0 ? formatCurrency(property.RentalIncome[0].amount) : '-'}
+                      </p>
                     </td>
-                    <td className="py-4 px-4">
-                      <span className="text-white font-medium">
+                    <td className="py-4 px-2 sm:px-4 hidden md:table-cell">
+                      <span className="text-white font-medium text-sm">
                         {property.RentalIncome.length > 0 ? formatCurrency(property.RentalIncome[0].amount) : '-'}
                       </span>
                     </td>
-                    <td className="py-4 px-4">
-                      <div className="flex items-center gap-2">
+                    <td className="py-4 px-2 sm:px-4">
+                      <div className="flex items-center gap-1 sm:gap-2">
                         <Link 
                           href={`/properties/${property.id}`}
                           className="inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
                         >
-                          <Eye className="h-4 w-4" />
+                          <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
                         </Link>
                         <Link 
                           href={`/properties/${property.id}/edit`}
                           className="inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
                         >
-                          <Edit className="h-4 w-4" />
+                          <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
                         </Link>
                         <Button 
                           variant="ghost" 
                           size="sm" 
-                          className="text-red-400 hover:text-red-300"
+                          className="text-red-400 hover:text-red-300 p-2"
                           onClick={() => handleDelete(property.id, property.name)}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                         </Button>
                       </div>
                     </td>

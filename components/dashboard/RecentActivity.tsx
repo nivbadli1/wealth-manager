@@ -79,17 +79,17 @@ export function RecentActivity({ activities }: RecentActivityProps) {
         <CardTitle className="text-white">פעילות אחרונה</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {activities.slice(0, 8).map((activity) => (
             <div
               key={activity.id}
-              className={`flex items-center gap-3 p-3 rounded-lg border ${getActivityColor(activity.type)}`}
+              className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border ${getActivityColor(activity.type)}`}
             >
               <div className="flex-shrink-0">
                 {getActivityIcon(activity.type)}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">
+                <p className="text-xs sm:text-sm font-medium text-white truncate">
                   {activity.name}
                 </p>
                 <p className="text-xs text-slate-400">

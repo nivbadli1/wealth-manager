@@ -91,20 +91,20 @@ function KPICard({ title, value, description, icon: Icon, trend, iconBgColor, hr
 
   return (
     <CardWrapper>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-        <CardTitle className="text-sm font-bold text-slate-300 tracking-wide uppercase">{title}</CardTitle>
-        <div className={`w-10 h-10 rounded-lg ${iconBgColor} flex items-center justify-center`}>
-          <Icon className="h-5 w-5 text-white" />
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 sm:pb-4">
+        <CardTitle className="text-xs sm:text-sm font-bold text-slate-300 tracking-wide uppercase">{title}</CardTitle>
+        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg ${iconBgColor} flex items-center justify-center`}>
+          <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
         </div>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold text-white mb-1">
+        <div className="text-xl sm:text-2xl font-bold text-white mb-1">
           {typeof value === 'number' ? formatCurrency(value) : value}
         </div>
-        <p className="text-sm text-slate-400 font-medium mb-3">{description}</p>
+        <p className="text-xs sm:text-sm text-slate-400 font-medium mb-2 sm:mb-3">{description}</p>
         {trend && (
-          <div className={`text-sm font-bold flex items-center gap-2 ${trend.isPositive ? 'stat-increase' : 'stat-decrease'}`}>
-            <TrendingUp className="w-4 h-4" />
+          <div className={`text-xs sm:text-sm font-bold flex items-center gap-1 sm:gap-2 ${trend.isPositive ? 'stat-increase' : 'stat-decrease'}`}>
+            <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4" />
             <span>{trend.isPositive ? '+' : ''}{trend.value}%</span>
           </div>
         )}
@@ -122,13 +122,13 @@ function QuickActionCard({ title, description, icon: Icon, href }: {
   return (
     <Link href={href}>
       <Card className="cursor-pointer group hover:bg-slate-700/50 transition-all duration-200">
-        <CardContent className="flex items-center p-4">
-          <div className="p-3 bg-slate-700 rounded-lg mr-4">
-            <Icon className="h-6 w-6 text-slate-300" />
+        <CardContent className="flex items-center p-3 sm:p-4">
+          <div className="p-2 sm:p-3 bg-slate-700 rounded-lg mr-3 sm:mr-4">
+            <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-slate-300" />
           </div>
           <div>
-            <h3 className="font-semibold text-white mb-1">{title}</h3>
-            <p className="text-sm text-slate-400">{description}</p>
+            <h3 className="font-semibold text-white mb-1 text-sm sm:text-base">{title}</h3>
+            <p className="text-xs sm:text-sm text-slate-400">{description}</p>
           </div>
         </CardContent>
       </Card>

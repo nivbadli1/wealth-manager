@@ -32,14 +32,14 @@ export function PropertyDistributionChart({ data, title }: PropertyDistributionC
 
   const CustomLegend = ({ payload }: { payload?: Array<{ color: string; value: string }> }) => {
     return (
-      <div className="flex flex-wrap justify-center gap-4 mt-4">
+      <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-4">
         {payload?.map((entry, index: number) => (
-          <div key={index} className="flex items-center gap-2">
+          <div key={index} className="flex items-center gap-1 sm:gap-2">
             <div 
-              className="w-3 h-3 rounded-full" 
+              className="w-2 h-2 sm:w-3 sm:h-3 rounded-full" 
               style={{ backgroundColor: entry.color }}
             />
-            <span className="text-sm text-slate-300">{entry.value}</span>
+            <span className="text-xs sm:text-sm text-slate-300">{entry.value}</span>
           </div>
         ))}
       </div>
@@ -48,8 +48,8 @@ export function PropertyDistributionChart({ data, title }: PropertyDistributionC
 
   return (
     <div className="h-full">
-      <h3 className="text-lg font-semibold text-white mb-4 text-center">{title}</h3>
-      <ResponsiveContainer width="100%" height={250}>
+      <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 text-center">{title}</h3>
+      <ResponsiveContainer width="100%" height={200}>
         <PieChart>
           <Pie
             data={data}
@@ -57,7 +57,7 @@ export function PropertyDistributionChart({ data, title }: PropertyDistributionC
             cy="50%"
             labelLine={false}
             label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
-            outerRadius={80}
+            outerRadius={60}
             fill="#8884d8"
             dataKey="value"
           >
