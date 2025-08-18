@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { formatCurrency, formatDate } from '@/lib/utils'
+import { SearchAndFilter, FilterOption } from '@/components/ui/SearchAndFilter'
+import { useSearchAndFilter } from '@/hooks/useSearchAndFilter'
 import Link from 'next/link'
 import {
-  PlusCircle, Search, Filter, Edit, Trash2, Eye, DollarSign, FileText, PiggyBank, TrendingUp
+  PlusCircle, Edit, Trash2, Eye, DollarSign, FileText, PiggyBank, TrendingUp
 } from 'lucide-react'
 
 interface Investment {
@@ -42,10 +43,56 @@ const typeColors = {
   other: 'bg-gray-100 text-gray-800',
 }
 
+const filterOptions: FilterOption[] = [
+  {
+    key: 'type',
+    label: 'סוג השקעה',
+    type: 'multiselect',
+    options: [
+      { value: 'stocks', label: 'מניות' },
+      { value: 'mutual_fund', label: 'קרן נאמנות' },
+      { value: 'pension', label: 'קופת גמל' },
+      { value: 'study_fund', label: 'קרן השתלמות' },
+      { value: 'savings', label: 'חיסכון' },
+      { value: 'bonds', label: 'אגרות חוב' },
+      { value: 'crypto', label: 'קריפטו' },
+      { value: 'other', label: 'אחר' }
+    ]
+  },
+  {
+    key: 'date',
+    label: 'תאריך השקעה',
+    type: 'dateRange'
+  },
+  {
+    key: 'currentValue',
+    label: 'שווי נוכחי',
+    type: 'numberRange'
+  },
+  {
+    key: 'initialAmount',
+    label: 'השקעה ראשונית',
+    type: 'numberRange'
+  }
+]
+
 export default function InvestmentsPage() {
   const [investments, setInvestments] = useState<Investment[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const {
+    searchTerm,
+    setSearchTerm,
+    filters,
+    updateFilter,
+    clearFilters,
+    filteredData: filteredInvestments
+  } = useSearchAndFilter({
+    data: investments,
+    searchFields: ['name', 'type'],
+    initialFilters: {}
+  })
 
   useEffect(() => {
     const fetchInvestments = async () => {
@@ -71,6 +118,10 @@ export default function InvestmentsPage() {
   const totalInitial = investments.reduce((sum, investment) => sum + investment.initialAmount, 0)
   const totalReturn = totalInvestments - totalInitial
   const averageReturn = totalInitial > 0 ? (totalReturn / totalInitial * 100) : 0
+
+  // Filtered statistics for display
+  const filteredTotalValue = filteredInvestments.reduce((sum, investment) => sum + investment.currentValue, 0)
+  const filteredCount = filteredInvestments.length
 
   if (isLoading) {
     return (
@@ -164,24 +215,27 @@ export default function InvestmentsPage() {
       </div>
 
       {/* Search and Filters */}
+      <SearchAndFilter
+        searchPlaceholder="חיפוש השקעות לפי שם או סוג..."
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        filterOptions={filterOptions}
+        filterValues={filters}
+        onFilterChange={updateFilter}
+        onClearFilters={clearFilters}
+        className="mb-6"
+      />
+
       <Card className="card">
         <CardHeader>
-          <CardTitle className="text-white">כל ההשקעות</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-white">כל ההשקעות</CardTitle>
+            <div className="text-sm text-slate-400">
+              מציג {filteredInvestments.length} מתוך {investments.length} השקעות
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="חיפוש השקעות..."
-                className="pr-10 bg-slate-700 border-slate-600 text-white placeholder-slate-400"
-              />
-            </div>
-            <Button variant="outline" className="btn-secondary">
-              <Filter className="h-4 w-4 ml-2" />
-              סינון
-            </Button>
-          </div>
 
           {/* Investments Table */}
           <div className="overflow-x-auto">
@@ -198,7 +252,37 @@ export default function InvestmentsPage() {
                 </tr>
               </thead>
               <tbody>
-                {investments.map((investment) => {
+                {filteredInvestments.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-8 px-4 text-center">
+                      <div className="text-slate-400">
+                        {investments.length === 0 ? (
+                          <div>
+                            <p className="mb-2">אין השקעות להצגה</p>
+                            <Link href="/investments/new">
+                              <Button className="btn-primary">
+                                <PlusCircle className="h-4 w-4 ml-2" />
+                                הוסף השקעה ראשונה
+                              </Button>
+                            </Link>
+                          </div>
+                        ) : (
+                          <div>
+                            <p className="mb-2">לא נמצאו השקעות המתאימות לקריטריונים</p>
+                            <Button
+                              variant="outline"
+                              onClick={clearFilters}
+                              className="btn-secondary"
+                            >
+                              נקה סינון
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredInvestments.map((investment) => {
                   const profit = investment.currentValue - investment.initialAmount
                   const returnRate = (profit / investment.initialAmount * 100)
                   
@@ -250,7 +334,8 @@ export default function InvestmentsPage() {
                       </td>
                     </tr>
                   )
-                })}
+                  })
+                )}
               </tbody>
             </table>
           </div>

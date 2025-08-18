@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { formatCurrency, formatDate } from '@/lib/utils'
+import { SearchAndFilter, FilterOption } from '@/components/ui/SearchAndFilter'
+import { useSearchAndFilter } from '@/hooks/useSearchAndFilter'
 import Link from 'next/link'
 import {
-  PlusCircle, Search, Filter, Edit, Trash2, Eye, Building2, MapPin, DollarSign, Calendar, Loader2
+  PlusCircle, Edit, Trash2, Eye, Building2, MapPin, DollarSign, Calendar, Loader2
 } from 'lucide-react'
 
 interface Property {
@@ -114,10 +115,61 @@ const statusColors = {
   'owner-occupied': 'bg-blue-100 text-blue-800',
 }
 
+const filterOptions: FilterOption[] = [
+  {
+    key: 'propertyType',
+    label: 'סוג נכס',
+    type: 'select',
+    options: [
+      { value: 'apartment', label: 'דירה' },
+      { value: 'house', label: 'בית פרטי' },
+      { value: 'commercial', label: 'מסחרי' }
+    ]
+  },
+  {
+    key: 'status',
+    label: 'סטטוס',
+    type: 'multiselect',
+    options: [
+      { value: 'rented', label: 'מושכר' },
+      { value: 'vacant', label: 'פנוי' },
+      { value: 'owner-occupied', label: 'בבעלות' }
+    ]
+  },
+  {
+    key: 'purchaseDate',
+    label: 'תאריך רכישה',
+    type: 'dateRange'
+  },
+  {
+    key: 'currentValue',
+    label: 'שווי נוכחי',
+    type: 'numberRange'
+  },
+  {
+    key: 'purchasePrice',
+    label: 'מחיר רכישה',
+    type: 'numberRange'
+  }
+]
+
 export default function PropertiesPage() {
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+  const {
+    searchTerm,
+    setSearchTerm,
+    filters,
+    updateFilter,
+    clearFilters,
+    filteredData: filteredProperties
+  } = useSearchAndFilter({
+    data: properties,
+    searchFields: ['name', 'address'],
+    initialFilters: {}
+  })
 
   useEffect(() => {
     fetchProperties()
@@ -268,28 +320,59 @@ export default function PropertiesPage() {
       </div>
 
       {/* Search and Filters */}
+      <SearchAndFilter
+        searchPlaceholder="חיפוש נכסים לפי שם או כתובת..."
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        filterOptions={filterOptions}
+        filterValues={filters}
+        onFilterChange={updateFilter}
+        onClearFilters={clearFilters}
+        className="mb-6"
+      />
+
       <Card className="card">
         <CardHeader>
-          <CardTitle className="text-white">כל הנכסים</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-white">כל הנכסים</CardTitle>
+            <div className="text-sm text-slate-400">
+              מציג {filteredProperties.length} מתוך {properties.length} נכסים
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="חיפוש נכסים..."
-                className="pr-10 bg-slate-700 border-slate-600 text-white placeholder-slate-400"
-              />
-            </div>
-            <Button variant="outline" className="btn-secondary">
-              <Filter className="h-4 w-4 ml-2" />
-              סינון
-            </Button>
-          </div>
 
           {/* Mobile Card Layout */}
           <div className="block lg:hidden space-y-4">
-            {properties.map((property) => (
+            {filteredProperties.length === 0 ? (
+              <div className="bg-slate-700 rounded-lg p-8 border border-slate-600 text-center">
+                <div className="text-slate-400">
+                  {properties.length === 0 ? (
+                    <div>
+                      <p className="mb-4">אין נכסים להצגה</p>
+                      <Link href="/properties/new">
+                        <Button className="btn-primary">
+                          <PlusCircle className="h-4 w-4 ml-2" />
+                          הוסף נכס ראשון
+                        </Button>
+                      </Link>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="mb-4">לא נמצאו נכסים המתאימים לקריטריונים</p>
+                      <Button
+                        variant="outline"
+                        onClick={clearFilters}
+                        className="btn-secondary"
+                      >
+                        נקה סינון
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              filteredProperties.map((property) => (
               <div key={property.id} className="bg-slate-700 rounded-lg p-4 border border-slate-600">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
@@ -347,7 +430,8 @@ export default function PropertiesPage() {
                   </div>
                 </div>
               </div>
-            ))}
+              ))
+            )}
           </div>
 
           {/* Desktop Table Layout */}
@@ -365,7 +449,37 @@ export default function PropertiesPage() {
                 </tr>
               </thead>
               <tbody>
-                {properties.map((property) => (
+                {filteredProperties.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-8 px-4 text-center">
+                      <div className="text-slate-400">
+                        {properties.length === 0 ? (
+                          <div>
+                            <p className="mb-2">אין נכסים להצגה</p>
+                            <Link href="/properties/new">
+                              <Button className="btn-primary">
+                                <PlusCircle className="h-4 w-4 ml-2" />
+                                הוסף נכס ראשון
+                              </Button>
+                            </Link>
+                          </div>
+                        ) : (
+                          <div>
+                            <p className="mb-2">לא נמצאו נכסים המתאימים לקריטריונים</p>
+                            <Button
+                              variant="outline"
+                              onClick={clearFilters}
+                              className="btn-secondary"
+                            >
+                              נקה סינון
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredProperties.map((property) => (
                   <tr key={property.id} className="border-b border-slate-600 hover:bg-slate-700/50">
                     <td className="py-4 px-4">
                       <div>
@@ -420,7 +534,8 @@ export default function PropertiesPage() {
                       </div>
                     </td>
                   </tr>
-                ))}
+                  ))
+                )}
               </tbody>
             </table>
           </div>

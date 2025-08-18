@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { formatCurrency, formatDate } from '@/lib/utils'
+import { SearchAndFilter, FilterOption } from '@/components/ui/SearchAndFilter'
+import { useSearchAndFilter } from '@/hooks/useSearchAndFilter'
 import Link from 'next/link'
 import {
-  PlusCircle, Search, Filter, Edit, Trash2, Eye, DollarSign, Calendar, FileText
+  PlusCircle, Edit, Trash2, Eye, DollarSign, Calendar, FileText
 } from 'lucide-react'
 
 interface Income {
@@ -81,10 +82,49 @@ const categoryColors = {
   other: 'bg-gray-100 text-gray-800',
 }
 
+const filterOptions: FilterOption[] = [
+  {
+    key: 'category',
+    label: 'קטגוריה',
+    type: 'multiselect',
+    options: [
+      { value: 'salary', label: 'משכורת' },
+      { value: 'investment', label: 'השקעות' },
+      { value: 'freelance', label: 'פרילנס' },
+      { value: 'rental', label: 'שכירות' },
+      { value: 'dividends', label: 'דיבידנדים' },
+      { value: 'other', label: 'אחר' }
+    ]
+  },
+  {
+    key: 'date',
+    label: 'תאריך',
+    type: 'dateRange'
+  },
+  {
+    key: 'amount',
+    label: 'סכום',
+    type: 'numberRange'
+  }
+]
+
 export default function IncomePage() {
   const [income, setIncome] = useState<Income[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const {
+    searchTerm,
+    setSearchTerm,
+    filters,
+    updateFilter,
+    clearFilters,
+    filteredData: filteredIncome
+  } = useSearchAndFilter({
+    data: income,
+    searchFields: ['source', 'description', 'category'],
+    initialFilters: {}
+  })
 
   useEffect(() => {
     const fetchIncome = async () => {
@@ -131,6 +171,10 @@ export default function IncomePage() {
              incomeDate.getFullYear() === currentDate.getFullYear()
     })
     .reduce((sum, inc) => sum + inc.amount, 0)
+
+  // Filtered statistics for display
+  const filteredTotalIncome = filteredIncome.reduce((sum, inc) => sum + inc.amount, 0)
+  const filteredCount = filteredIncome.length
 
   return (
     <div className="space-y-6">
@@ -194,24 +238,27 @@ export default function IncomePage() {
       </div>
 
       {/* Search and Filters */}
+      <SearchAndFilter
+        searchPlaceholder="חיפוש הכנסות לפי מקור, תיאור או קטגוריה..."
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        filterOptions={filterOptions}
+        filterValues={filters}
+        onFilterChange={updateFilter}
+        onClearFilters={clearFilters}
+        className="mb-6"
+      />
+
       <Card className="card">
         <CardHeader>
-          <CardTitle className="text-white">כל ההכנסות</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-white">כל ההכנסות</CardTitle>
+            <div className="text-sm text-slate-400">
+              מציג {filteredIncome.length} מתוך {income.length} הכנסות
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="חיפוש הכנסות..."
-                className="pr-10 bg-slate-700 border-slate-600 text-white placeholder-slate-400"
-              />
-            </div>
-            <Button variant="outline" className="btn-secondary">
-              <Filter className="h-4 w-4 ml-2" />
-              סינון
-            </Button>
-          </div>
 
           {/* Income Table */}
           <div className="overflow-x-auto">
@@ -227,7 +274,37 @@ export default function IncomePage() {
                 </tr>
               </thead>
               <tbody>
-                {income.map((incomeItem) => (
+                {filteredIncome.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-8 px-4 text-center">
+                      <div className="text-slate-400">
+                        {income.length === 0 ? (
+                          <div>
+                            <p className="mb-2">אין הכנסות להצגה</p>
+                            <Link href="/income/new">
+                              <Button className="btn-primary">
+                                <PlusCircle className="h-4 w-4 ml-2" />
+                                הוסף הכנסה ראשונה
+                              </Button>
+                            </Link>
+                          </div>
+                        ) : (
+                          <div>
+                            <p className="mb-2">לא נמצאו הכנסות המתאימות לקריטריונים</p>
+                            <Button
+                              variant="outline"
+                              onClick={clearFilters}
+                              className="btn-secondary"
+                            >
+                              נקה סינון
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredIncome.map((incomeItem) => (
                   <tr key={incomeItem.id} className="border-b border-slate-600 hover:bg-slate-700/50">
                     <td className="py-4 px-4">
                       <div>
@@ -266,7 +343,8 @@ export default function IncomePage() {
                       </div>
                     </td>
                   </tr>
-                ))}
+                  ))
+                )}
               </tbody>
             </table>
           </div>

@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { formatCurrency, formatDate } from '@/lib/utils'
+import { SearchAndFilter, FilterOption } from '@/components/ui/SearchAndFilter'
+import { useSearchAndFilter } from '@/hooks/useSearchAndFilter'
 import Link from 'next/link'
 import {
-  PlusCircle, Search, Filter, Edit, Trash2, Eye, DollarSign, Calendar, FileText
+  PlusCircle, Edit, Trash2, Eye, DollarSign, Calendar, FileText
 } from 'lucide-react'
 
 interface Expense {
@@ -45,10 +46,53 @@ const categoryColors = {
   other: 'bg-slate-100 text-slate-800',
 }
 
+const filterOptions: FilterOption[] = [
+  {
+    key: 'category',
+    label: 'קטגוריה',
+    type: 'multiselect',
+    options: [
+      { value: 'living', label: 'משק בית' },
+      { value: 'transportation', label: 'תחבורה' },
+      { value: 'healthcare', label: 'בריאות' },
+      { value: 'entertainment', label: 'בילויים' },
+      { value: 'education', label: 'חינוך' },
+      { value: 'shopping', label: 'קניות' },
+      { value: 'utilities', label: 'חשבונות' },
+      { value: 'insurance', label: 'ביטוח' },
+      { value: 'taxes', label: 'מיסים' },
+      { value: 'other', label: 'אחר' }
+    ]
+  },
+  {
+    key: 'date',
+    label: 'תאריך',
+    type: 'dateRange'
+  },
+  {
+    key: 'amount',
+    label: 'סכום',
+    type: 'numberRange'
+  }
+]
+
 export default function ExpensesPage() {
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const {
+    searchTerm,
+    setSearchTerm,
+    filters,
+    updateFilter,
+    clearFilters,
+    filteredData: filteredExpenses
+  } = useSearchAndFilter({
+    data: expenses,
+    searchFields: ['category', 'description'],
+    initialFilters: {}
+  })
 
   useEffect(() => {
     const fetchExpenses = async () => {
@@ -79,6 +123,10 @@ export default function ExpensesPage() {
              expenseDate.getFullYear() === currentDate.getFullYear()
     })
     .reduce((sum, expense) => sum + expense.amount, 0)
+
+  // Filtered statistics for display
+  const filteredTotalExpenses = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0)
+  const filteredCount = filteredExpenses.length
 
   if (loading) {
     return (
@@ -176,24 +224,27 @@ export default function ExpensesPage() {
       </div>
 
       {/* Search and Filters */}
+      <SearchAndFilter
+        searchPlaceholder="חיפוש הוצאות לפי קטגוריה או תיאור..."
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        filterOptions={filterOptions}
+        filterValues={filters}
+        onFilterChange={updateFilter}
+        onClearFilters={clearFilters}
+        className="mb-6"
+      />
+
       <Card className="card">
         <CardHeader>
-          <CardTitle className="text-white">כל ההוצאות</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-white">כל ההוצאות</CardTitle>
+            <div className="text-sm text-slate-400">
+              מציג {filteredExpenses.length} מתוך {expenses.length} הוצאות
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="חיפוש הוצאות..."
-                className="pr-10 bg-slate-700 border-slate-600 text-white placeholder-slate-400"
-              />
-            </div>
-            <Button variant="outline" className="btn-secondary">
-              <Filter className="h-4 w-4 ml-2" />
-              סינון
-            </Button>
-          </div>
 
           {/* Expenses Table */}
           <div className="overflow-x-auto">
@@ -208,20 +259,37 @@ export default function ExpensesPage() {
                 </tr>
               </thead>
               <tbody>
-                {expenses.length === 0 ? (
+                {filteredExpenses.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="py-8 px-4 text-center">
-                      <p className="text-slate-400">אין הוצאות להצגה</p>
-                      <Link href="/expenses/new">
-                        <Button className="mt-2 btn-primary">
-                          <PlusCircle className="h-4 w-4 ml-2" />
-                          הוסף הוצאה ראשונה
-                        </Button>
-                      </Link>
+                      <div className="text-slate-400">
+                        {expenses.length === 0 ? (
+                          <div>
+                            <p className="mb-2">אין הוצאות להצגה</p>
+                            <Link href="/expenses/new">
+                              <Button className="btn-primary">
+                                <PlusCircle className="h-4 w-4 ml-2" />
+                                הוסף הוצאה ראשונה
+                              </Button>
+                            </Link>
+                          </div>
+                        ) : (
+                          <div>
+                            <p className="mb-2">לא נמצאו הוצאות המתאימות לקריטריונים</p>
+                            <Button
+                              variant="outline"
+                              onClick={clearFilters}
+                              className="btn-secondary"
+                            >
+                              נקה סינון
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ) : (
-                  expenses.map((expense) => (
+                  filteredExpenses.map((expense) => (
                     <tr key={expense.id} className="border-b border-slate-600 hover:bg-slate-700/50">
                       <td className="py-4 px-4">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${categoryColors[expense.category as keyof typeof categoryColors]}`}>
