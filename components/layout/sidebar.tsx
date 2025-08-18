@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
-  Building2, LayoutDashboard, LandPlot, PiggyBank, ReceiptText, BarChart3, Settings, PlusCircle, Banknote, Database,
+  Building2, LayoutDashboard, LandPlot, PiggyBank, ReceiptText, BarChart3, Settings, PlusCircle, Banknote, Database, X,
 } from 'lucide-react'
 
 const navigation = [
@@ -49,20 +49,33 @@ const navigation = [
   { name: 'ניהול נתונים', href: '/data', icon: Database },
 ]
 
-export function Sidebar() {
+interface SidebarProps {
+  onClose?: () => void
+}
+
+export function Sidebar({ onClose }: SidebarProps) {
   const pathname = usePathname()
 
   return (
     <div className="fixed inset-y-0 right-0 w-64 bg-slate-800 border-l border-slate-600 shadow-lg z-40">
       <div className="flex flex-col h-full">
         {/* Logo/Header */}
-        <div className="flex items-center justify-center h-16 border-b border-slate-600 bg-slate-800">
+        <div className="flex items-center justify-between h-16 border-b border-slate-600 bg-slate-800 px-4">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-blue-500 rounded-lg">
               <Building2 className="h-6 w-6 text-white" />
             </div>
             <span className="text-xl font-bold text-white">ניהול עושר</span>
           </div>
+          {/* Mobile close button */}
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="lg:hidden p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          )}
         </div>
 
         {/* Navigation */}
@@ -78,6 +91,7 @@ export function Sidebar() {
                     "sidebar-item",
                     isActive && "active"
                   )}
+                  onClick={() => onClose?.()}
                 >
                   <item.icon className="h-5 w-5" />
                   <span className="font-medium">{item.name}</span>
@@ -94,6 +108,7 @@ export function Sidebar() {
                           "block px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors duration-200 font-medium",
                           pathname === subItem.href && "text-blue-400 bg-slate-700 font-semibold"
                         )}
+                        onClick={() => onClose?.()}
                       >
                         {subItem.name}
                       </Link>
@@ -112,6 +127,7 @@ export function Sidebar() {
             <Link
               href="/properties/new"
               className="flex items-center gap-2 text-sm text-slate-300 hover:text-white hover:bg-slate-600 px-3 py-2 rounded-lg transition-colors duration-200 font-medium"
+              onClick={() => onClose?.()}
             >
               <PlusCircle className="h-4 w-4 text-slate-400" />
               הוסף נכס
@@ -119,6 +135,7 @@ export function Sidebar() {
             <Link
               href="/income/new" 
               className="flex items-center gap-2 text-sm text-slate-300 hover:text-white hover:bg-slate-600 px-3 py-2 rounded-lg transition-colors duration-200 font-medium"
+              onClick={() => onClose?.()}
             >
               <PlusCircle className="h-4 w-4 text-slate-400" />
               הוסף הכנסה
@@ -126,6 +143,7 @@ export function Sidebar() {
             <Link
               href="/expenses/new"
               className="flex items-center gap-2 text-sm text-slate-300 hover:text-white hover:bg-slate-600 px-3 py-2 rounded-lg transition-colors duration-200 font-medium"
+              onClick={() => onClose?.()}
             >
               <PlusCircle className="h-4 w-4 text-slate-400" />
               הוסף הוצאה
@@ -138,6 +156,7 @@ export function Sidebar() {
           <Link
             href="/settings"
             className="flex items-center gap-2 px-3 py-2.5 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors duration-200 font-medium"
+            onClick={() => onClose?.()}
           >
             <Settings className="h-5 w-5 text-slate-400" />
             <span className="font-medium">הגדרות</span>

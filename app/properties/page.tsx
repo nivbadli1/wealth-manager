@@ -187,15 +187,15 @@ export default function PropertiesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold text-white mb-2">ניהול נכסים</h1>
-          <p className="text-slate-400">ניהול נכסי הנדל״ן שלך</p>
+          <h1 className="text-2xl sm:text-3xl font-semibold text-white mb-2">ניהול נכסים</h1>
+          <p className="text-slate-400 text-sm sm:text-base">ניהול נכסי הנדל״ן שלך</p>
         </div>
         <Link href="/properties/new">
-          <Button className="btn-primary">
+          <Button className="btn-primary w-full sm:w-auto">
             <PlusCircle className="h-4 w-4 ml-2" />
             הוסף נכס חדש
           </Button>
@@ -203,9 +203,9 @@ export default function PropertiesPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <Card className="card">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-400 mb-1">סך הנכסים</p>
@@ -219,48 +219,48 @@ export default function PropertiesPage() {
         </Card>
 
         <Card className="card">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-400 mb-1">שווי כולל</p>
-                <p className="text-2xl font-bold text-white">
+                <p className="text-xl sm:text-2xl font-bold text-white">
                   {formatCurrency(properties.reduce((sum, p) => sum + p.currentValue, 0))}
                 </p>
               </div>
               <div className="p-3 bg-green-500 rounded-lg">
-                <DollarSign className="h-6 w-6 text-white" />
+                <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="card">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-400 mb-1">הכנסה חודשית</p>
-                <p className="text-2xl font-bold text-white">
+                <p className="text-xl sm:text-2xl font-bold text-white">
                   {formatCurrency(properties.reduce((sum, p) => sum + (p.RentalIncome.length > 0 ? p.RentalIncome[0].amount : 0), 0))}
                 </p>
               </div>
               <div className="p-3 bg-purple-500 rounded-lg">
-                <DollarSign className="h-6 w-6 text-white" />
+                <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="card">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-400 mb-1">נכסים מושכרים</p>
-                <p className="text-2xl font-bold text-white">
+                <p className="text-xl sm:text-2xl font-bold text-white">
                   {properties.filter(p => p.status === 'rented').length}
                 </p>
               </div>
               <div className="p-3 bg-orange-500 rounded-lg">
-                <Calendar className="h-6 w-6 text-white" />
+                <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
             </div>
           </CardContent>
@@ -289,16 +289,16 @@ export default function PropertiesPage() {
 
           {/* Properties Table */}
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full min-w-[800px]">
               <thead>
                 <tr className="border-b border-slate-600">
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-slate-300">שם הנכס</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-slate-300">כתובת</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-slate-300">סוג</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-slate-300">סטטוס</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-slate-300">שווי נוכחי</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-slate-300">דמי שכירות</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-slate-300">פעולות</th>
+                  <th className="text-right py-3 px-2 sm:px-4 text-sm font-semibold text-slate-300">שם הנכס</th>
+                  <th className="text-right py-3 px-2 sm:px-4 text-sm font-semibold text-slate-300 hidden sm:table-cell">כתובת</th>
+                  <th className="text-right py-3 px-2 sm:px-4 text-sm font-semibold text-slate-300">סוג</th>
+                  <th className="text-right py-3 px-2 sm:px-4 text-sm font-semibold text-slate-300">סטטוס</th>
+                  <th className="text-right py-3 px-2 sm:px-4 text-sm font-semibold text-slate-300">שווי נוכחי</th>
+                  <th className="text-right py-3 px-2 sm:px-4 text-sm font-semibold text-slate-300 hidden md:table-cell">דמי שכירות</th>
+                  <th className="text-right py-3 px-2 sm:px-4 text-sm font-semibold text-slate-300">פעולות</th>
                 </tr>
               </thead>
               <tbody>

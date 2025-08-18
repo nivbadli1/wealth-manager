@@ -240,15 +240,15 @@ export default function Dashboard() {
   ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-semibold text-white mb-2">דשבורד נתונים פיננסיים</h1>
-        <p className="text-slate-400">מבט כולל על הנכסים, ההכנסות וההשקעות שלך</p>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-semibold text-white mb-2">דשבורד נתונים פיננסיים</h1>
+        <p className="text-slate-400 text-sm sm:text-base">מבט כולל על הנכסים, ההכנסות וההשקעות שלך</p>
       </div>
 
-      {/* KPI Cards Grid - EXACT h-40 height */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* KPI Cards Grid - Responsive */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <KPICard
           title="הכנסה חודשית"
           value={dashboardData.kpi.monthlyRentalIncome}
@@ -288,7 +288,7 @@ export default function Dashboard() {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
         <Card className="card">
           <CardHeader>
             <CardTitle className="text-white">הכנסות והוצאות חודשיות</CardTitle>
@@ -298,9 +298,9 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <Card className="card">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <PropertyDistributionChart 
                 data={propertyTypeData} 
                 title="התפלגות סוגי נכסים" 
@@ -309,7 +309,7 @@ export default function Dashboard() {
           </Card>
 
           <Card className="card">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <PropertyDistributionChart 
                 data={propertyStatusData} 
                 title="סטטוס נכסים" 
@@ -321,8 +321,8 @@ export default function Dashboard() {
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-xl font-semibold text-white mb-4">פעולות מהירות</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <h2 className="text-lg sm:text-xl font-semibold text-white mb-4">פעולות מהירות</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           <QuickActionCard
             title="הוסף נכס חדש"
             description="הוסף נכס נדל״ן חדש למערכת"
