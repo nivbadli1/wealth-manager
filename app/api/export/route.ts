@@ -14,9 +14,9 @@ export async function GET(request: NextRequest) {
       case 'properties':
         data = await prisma.property.findMany({
           include: {
-            rentalIncomes: true,
-            propertyExpenses: true,
-            mortgages: true
+            RentalIncome: true,
+            PropertyExpense: true,
+            Mortgage: true
           }
         })
         break
@@ -37,9 +37,9 @@ export async function GET(request: NextRequest) {
         data = {
           properties: await prisma.property.findMany({
             include: {
-              rentalIncomes: true,
-              propertyExpenses: true,
-              mortgages: true
+              RentalIncome: true,
+              PropertyExpense: true,
+              Mortgage: true
             }
           }),
           investments: await prisma.investment.findMany(),

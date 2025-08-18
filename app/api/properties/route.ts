@@ -6,9 +6,9 @@ export async function GET() {
   try {
     const properties = await prisma.property.findMany({
       include: {
-        rentalIncomes: true,
-        propertyExpenses: true,
-        mortgages: true
+        RentalIncome: true,
+        PropertyExpense: true,
+        Mortgage: true
       },
       orderBy: {
         createdAt: 'desc'

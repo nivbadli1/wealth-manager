@@ -19,20 +19,20 @@ interface Property {
   currentValue: number
   propertyType: string
   status: string
-  rentalIncomes: Array<{
+  RentalIncome: Array<{
     id: string
     amount: number
     date: string
     tenantName?: string
   }>
-  propertyExpenses: Array<{
+  PropertyExpense: Array<{
     id: string
     amount: number
     date: string
     category: string
     description?: string
   }>
-  mortgages: Array<{
+  Mortgage: Array<{
     id: string
     bank: string
     currentBalance: number
@@ -217,7 +217,7 @@ export default function PropertiesPage() {
               <div>
                 <p className="text-sm text-slate-400 mb-1">הכנסה חודשית</p>
                 <p className="text-2xl font-bold text-white">
-                  {formatCurrency(properties.reduce((sum, p) => sum + (p.rentalIncomes.length > 0 ? p.rentalIncomes[0].amount : 0), 0))}
+                  {formatCurrency(properties.reduce((sum, p) => sum + (p.RentalIncome.length > 0 ? p.RentalIncome[0].amount : 0), 0))}
                 </p>
               </div>
               <div className="p-3 bg-purple-500 rounded-lg">
@@ -306,7 +306,7 @@ export default function PropertiesPage() {
                     </td>
                     <td className="py-4 px-4">
                       <span className="text-white font-medium">
-                        {property.rentalIncomes.length > 0 ? formatCurrency(property.rentalIncomes[0].amount) : '-'}
+                        {property.RentalIncome.length > 0 ? formatCurrency(property.RentalIncome[0].amount) : '-'}
                       </span>
                     </td>
                     <td className="py-4 px-4">

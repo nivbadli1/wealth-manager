@@ -36,9 +36,9 @@ export async function GET(request: NextRequest) {
           }
         },
         include: {
-          rentalIncomes: true,
-          propertyExpenses: true,
-          mortgages: true
+          RentalIncome: true,
+          PropertyExpense: true,
+          Mortgage: true
         }
       }),
       prisma.investment.findMany({
@@ -70,14 +70,14 @@ export async function GET(request: NextRequest) {
     const totalAssets = totalPropertyValue + totalInvestmentValue
     
     const totalPropertyMortgage = properties.reduce((sum, prop) => 
-      sum + (prop.mortgages.reduce((mortgageSum, mortgage) => mortgageSum + mortgage.currentBalance, 0)), 0)
+      sum + (prop.Mortgage.reduce((mortgageSum, mortgage) => mortgageSum + mortgage.currentBalance, 0)), 0)
     const totalDebt = totalPropertyMortgage
     
     const netWorth = totalAssets - totalDebt
     
     // Calculate monthly cash flow
     const monthlyRentalIncome = properties.reduce((sum, prop) => 
-      sum + prop.rentalIncomes.reduce((rentalSum, rental) => rentalSum + rental.amount, 0), 0)
+      sum + prop.RentalIncome.reduce((rentalSum, rental) => rentalSum + rental.amount, 0), 0)
     const monthlyIncome = income.reduce((sum, inc) => sum + inc.amount, 0) + monthlyRentalIncome
     const monthlyExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0)
     const monthlyCashFlow = monthlyIncome - monthlyExpenses
@@ -116,7 +116,7 @@ export async function GET(request: NextRequest) {
 
     // Add rental income to monthly data
     properties.forEach(prop => {
-      prop.rentalIncomes.forEach(rental => {
+      prop.RentalIncome.forEach(rental => {
         const monthKey = rental.date.toISOString().substring(0, 7)
         monthlyRentalData[monthKey] = (monthlyRentalData[monthKey] || 0) + rental.amount
         monthlyData[monthKey] = (monthlyData[monthKey] || 0) + rental.amount

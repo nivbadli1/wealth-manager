@@ -6,9 +6,9 @@ export async function GET() {
     // Fetch all properties
     const properties = await prisma.property.findMany({
       include: {
-        rentalIncomes: true,
-        propertyExpenses: true,
-        mortgages: true,
+        RentalIncome: true,
+        PropertyExpense: true,
+        Mortgage: true,
       },
     })
 
@@ -29,7 +29,7 @@ export async function GET() {
     const currentMonth = new Date().getMonth()
     const currentYear = new Date().getFullYear()
     const monthlyRentalIncome = properties.reduce((sum, property) => {
-      const propertyRentals = property.rentalIncomes.filter(rental => {
+      const propertyRentals = property.RentalIncome.filter(rental => {
         const rentalDate = new Date(rental.date)
         return rentalDate.getMonth() === currentMonth && rentalDate.getFullYear() === currentYear
       })
@@ -38,7 +38,7 @@ export async function GET() {
 
     // Calculate monthly expenses
     const monthlyExpenses = properties.reduce((sum, property) => {
-      const propertyExpenses = property.propertyExpenses.filter(expense => {
+      const propertyExpenses = property.PropertyExpense.filter(expense => {
         const expenseDate = new Date(expense.date)
         return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear
       })
@@ -57,7 +57,7 @@ export async function GET() {
     const monthlyData = Array.from({ length: 12 }, (_, i) => {
       const month = new Date(currentYear, i, 1)
       const monthRentals = properties.reduce((sum, property) => {
-        const propertyRentals = property.rentalIncomes.filter(rental => {
+        const propertyRentals = property.RentalIncome.filter(rental => {
           const rentalDate = new Date(rental.date)
           return rentalDate.getMonth() === i && rentalDate.getFullYear() === currentYear
         })
@@ -65,7 +65,7 @@ export async function GET() {
       }, 0)
       
       const monthExpenses = properties.reduce((sum, property) => {
-        const propertyExpenses = property.propertyExpenses.filter(expense => {
+        const propertyExpenses = property.PropertyExpense.filter(expense => {
           const expenseDate = new Date(expense.date)
           return expenseDate.getMonth() === i && expenseDate.getFullYear() === currentYear
         })

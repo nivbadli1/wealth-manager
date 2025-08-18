@@ -30,21 +30,21 @@ export async function POST(request: NextRequest) {
     const [properties, investments, income, expenses] = await Promise.all([
       prisma.property.findMany({
         include: {
-          rentalIncomes: {
+          RentalIncome: {
             where: {
               date: {
                 gte: startDate
               }
             }
           },
-          propertyExpenses: {
+          PropertyExpense: {
             where: {
               date: {
                 gte: startDate
               }
             }
           },
-          mortgages: true
+          Mortgage: true
         }
       }),
       prisma.investment.findMany({
@@ -74,11 +74,11 @@ export async function POST(request: NextRequest) {
     const totalPropertyValue = properties.reduce((sum, prop) => sum + (prop.currentValue || prop.purchasePrice), 0)
     const totalInvestmentValue = investments.reduce((sum, inv) => sum + inv.currentValue, 0)
     const totalAssets = totalPropertyValue + totalInvestmentValue
-    const totalDebt = properties.reduce((sum, prop) => sum + prop.mortgages.reduce((ms, m) => ms + m.currentBalance, 0), 0)
+    const totalDebt = properties.reduce((sum, prop) => sum + prop.Mortgage.reduce((ms, m) => ms + m.currentBalance, 0), 0)
     const netWorth = totalAssets - totalDebt
     
     const totalIncome = income.reduce((sum, inc) => sum + inc.amount, 0) + 
-      properties.reduce((sum, prop) => sum + prop.rentalIncomes.reduce((rs, r) => rs + r.amount, 0), 0)
+      properties.reduce((sum, prop) => sum + prop.RentalIncome.reduce((rs, r) => rs + r.amount, 0), 0)
     const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0)
     const netCashFlow = totalIncome - totalExpenses
 
@@ -106,18 +106,18 @@ export async function POST(request: NextRequest) {
         currentValue: prop.currentValue,
         purchaseDate: prop.purchaseDate.toISOString(),
         status: prop.status,
-        rentalIncomes: prop.rentalIncomes.map(rental => ({
+        rentalIncomes: prop.RentalIncome.map(rental => ({
           amount: rental.amount,
           date: rental.date.toISOString(),
           tenantName: rental.tenantName
         })),
-        expenses: prop.propertyExpenses.map(expense => ({
+        expenses: prop.PropertyExpense.map(expense => ({
           amount: expense.amount,
           category: expense.category,
           date: expense.date.toISOString(),
           description: expense.description
         })),
-        mortgages: prop.mortgages.map(mortgage => ({
+        mortgages: prop.Mortgage.map(mortgage => ({
           bank: mortgage.bank,
           originalAmount: mortgage.originalAmount,
           currentBalance: mortgage.currentBalance,
