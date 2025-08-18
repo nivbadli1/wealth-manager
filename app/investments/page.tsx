@@ -119,9 +119,7 @@ export default function InvestmentsPage() {
   const totalReturn = totalInvestments - totalInitial
   const averageReturn = totalInitial > 0 ? (totalReturn / totalInitial * 100) : 0
 
-  // Filtered statistics for display
-  const filteredTotalValue = filteredInvestments.reduce((sum, investment) => sum + investment.currentValue, 0)
-  const filteredCount = filteredInvestments.length
+  // Note: filteredTotalValue and filteredCount can be used for displaying filtered statistics if needed
 
   if (isLoading) {
     return (

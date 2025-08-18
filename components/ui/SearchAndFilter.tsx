@@ -21,7 +21,7 @@ export interface FilterOption {
 }
 
 export interface FilterValue {
-  [key: string]: any
+  [key: string]: string | number | string[] | { from?: Date; to?: Date } | { min?: string; max?: string } | null | undefined
 }
 
 export interface SearchAndFilterProps {
@@ -30,7 +30,7 @@ export interface SearchAndFilterProps {
   onSearchChange: (value: string) => void
   filterOptions: FilterOption[]
   filterValues: FilterValue
-  onFilterChange: (key: string, value: any) => void
+  onFilterChange: (key: string, value: string | number | string[] | { from?: Date; to?: Date } | { min?: string; max?: string } | null) => void
   onClearFilters: () => void
   className?: string
 }
@@ -62,7 +62,7 @@ export function SearchAndFilter({
       case 'select':
         return (
           <Select
-            value={value || ''}
+            value={typeof value === 'string' ? value : ''}
             onValueChange={(newValue) => onFilterChange(option.key, newValue || null)}
           >
             <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
@@ -125,7 +125,9 @@ export function SearchAndFilter({
         )
 
       case 'dateRange':
-        const dateRange = value || { from: null, to: null }
+        const dateRange = (typeof value === 'object' && value && !Array.isArray(value) && 'from' in value) 
+          ? value as { from?: Date; to?: Date } 
+          : { from: undefined, to: undefined }
         return (
           <div className="flex gap-2">
             <Popover>
@@ -170,7 +172,9 @@ export function SearchAndFilter({
         )
 
       case 'numberRange':
-        const numberRange = value || { min: '', max: '' }
+        const numberRange = (typeof value === 'object' && value && !Array.isArray(value) && 'min' in value) 
+          ? value as { min?: string; max?: string } 
+          : { min: '', max: '' }
         return (
           <div className="flex gap-2">
             <Input

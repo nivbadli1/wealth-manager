@@ -124,9 +124,7 @@ export default function ExpensesPage() {
     })
     .reduce((sum, expense) => sum + expense.amount, 0)
 
-  // Filtered statistics for display
-  const filteredTotalExpenses = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0)
-  const filteredCount = filteredExpenses.length
+  // Note: filteredTotalExpenses and filteredCount can be used for displaying filtered statistics if needed
 
   if (loading) {
     return (

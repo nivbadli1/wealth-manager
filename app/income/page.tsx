@@ -172,9 +172,7 @@ export default function IncomePage() {
     })
     .reduce((sum, inc) => sum + inc.amount, 0)
 
-  // Filtered statistics for display
-  const filteredTotalIncome = filteredIncome.reduce((sum, inc) => sum + inc.amount, 0)
-  const filteredCount = filteredIncome.length
+  // Note: filteredTotalIncome and filteredCount can be used for displaying filtered statistics if needed
 
   return (
     <div className="space-y-6">

@@ -19,7 +19,7 @@ export function useSearchAndFilter<T>({
   const [searchTerm, setSearchTerm] = useState('')
   const [filters, setFilters] = useState<FilterValue>(initialFilters)
 
-  const updateFilter = (key: string, value: any) => {
+  const updateFilter = (key: string, value: string | number | string[] | { from?: Date; to?: Date } | { min?: string; max?: string } | null) => {
     setFilters(prev => ({
       ...prev,
       [key]: value
@@ -51,20 +51,21 @@ export function useSearchAndFilter<T>({
       return Object.entries(filters).every(([key, value]) => {
         if (!value) return true
         
-        const itemValue = (item as any)[key]
+        const itemValue = (item as Record<string, unknown>)[key]
         
         // Handle different filter types
         if (Array.isArray(value)) {
           // Multi-select filter
-          return value.length === 0 || value.includes(itemValue)
+          return value.length === 0 || value.includes(itemValue as string)
         }
         
         if (typeof value === 'object' && value !== null) {
           // Handle date range
-          if (value.from || value.to) {
-            const itemDate = new Date(itemValue)
-            const fromDate = value.from ? new Date(value.from) : null
-            const toDate = value.to ? new Date(value.to) : null
+          if ('from' in value || 'to' in value) {
+            const dateRange = value as { from?: Date; to?: Date }
+            const itemDate = new Date(itemValue as string)
+            const fromDate = dateRange.from ? new Date(dateRange.from) : null
+            const toDate = dateRange.to ? new Date(dateRange.to) : null
             
             if (fromDate && itemDate < fromDate) return false
             if (toDate && itemDate > toDate) return false
@@ -72,10 +73,11 @@ export function useSearchAndFilter<T>({
           }
           
           // Handle number range
-          if (value.min !== undefined || value.max !== undefined) {
+          if ('min' in value || 'max' in value) {
+            const numberRange = value as { min?: string; max?: string }
             const numValue = Number(itemValue)
-            if (value.min !== '' && numValue < Number(value.min)) return false
-            if (value.max !== '' && numValue > Number(value.max)) return false
+            if (numberRange.min && numberRange.min !== '' && numValue < Number(numberRange.min)) return false
+            if (numberRange.max && numberRange.max !== '' && numValue > Number(numberRange.max)) return false
             return true
           }
         }
@@ -106,10 +108,10 @@ export function createCustomFilter<T>(filterFn: FilterFunction<T>) {
 // Common filter functions
 export const filterByDateRange = <T>(dateField: keyof T) => 
   createCustomFilter<T>((item, filters) => {
-    const dateRange = filters.dateRange
+    const dateRange = filters.dateRange as { from?: Date; to?: Date } | undefined
     if (!dateRange?.from && !dateRange?.to) return true
     
-    const itemDate = new Date(item[dateField] as any)
+    const itemDate = new Date(item[dateField] as string)
     const fromDate = dateRange.from ? new Date(dateRange.from) : null
     const toDate = dateRange.to ? new Date(dateRange.to) : null
     
@@ -120,7 +122,7 @@ export const filterByDateRange = <T>(dateField: keyof T) =>
 
 export const filterByAmountRange = <T>(amountField: keyof T) =>
   createCustomFilter<T>((item, filters) => {
-    const range = filters.amountRange
+    const range = filters.amountRange as { min?: string; max?: string } | undefined
     if (!range?.min && !range?.max) return true
     
     const amount = Number(item[amountField])
@@ -131,7 +133,7 @@ export const filterByAmountRange = <T>(amountField: keyof T) =>
 
 export const filterByCategory = <T>(categoryField: keyof T) =>
   createCustomFilter<T>((item, filters) => {
-    const categories = filters.categories
+    const categories = filters.categories as string[] | undefined
     if (!categories || categories.length === 0) return true
-    return categories.includes(item[categoryField])
+    return categories.includes(item[categoryField] as string)
   })
