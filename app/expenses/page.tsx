@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { SearchAndFilter, FilterOption } from '@/components/ui/SearchAndFilter'
 import { useSearchAndFilter } from '@/hooks/useSearchAndFilter'
+import { useLocalization } from '@/contexts/LocalizationContext'
 import Link from 'next/link'
 import {
   PlusCircle, Edit, Trash2, Eye, DollarSign, Calendar, FileText
@@ -18,19 +19,6 @@ interface Expense {
   date: string
   description?: string
   createdAt: string
-}
-
-const categoryLabels = {
-  living: 'משק בית',
-  transportation: 'תחבורה',
-  healthcare: 'בריאות',
-  entertainment: 'בילויים',
-  education: 'חינוך',
-  shopping: 'קניות',
-  utilities: 'חשבונות',
-  insurance: 'ביטוח',
-  taxes: 'מיסים',
-  other: 'אחר',
 }
 
 const categoryColors = {
@@ -46,40 +34,54 @@ const categoryColors = {
   other: 'bg-slate-100 text-slate-800',
 }
 
-const filterOptions: FilterOption[] = [
-  {
-    key: 'category',
-    label: 'קטגוריה',
-    type: 'multiselect',
-    options: [
-      { value: 'living', label: 'משק בית' },
-      { value: 'transportation', label: 'תחבורה' },
-      { value: 'healthcare', label: 'בריאות' },
-      { value: 'entertainment', label: 'בילויים' },
-      { value: 'education', label: 'חינוך' },
-      { value: 'shopping', label: 'קניות' },
-      { value: 'utilities', label: 'חשבונות' },
-      { value: 'insurance', label: 'ביטוח' },
-      { value: 'taxes', label: 'מיסים' },
-      { value: 'other', label: 'אחר' }
-    ]
-  },
-  {
-    key: 'date',
-    label: 'תאריך',
-    type: 'dateRange'
-  },
-  {
-    key: 'amount',
-    label: 'סכום',
-    type: 'numberRange'
-  }
-]
-
 export default function ExpensesPage() {
+  const { t } = useLocalization()
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const filterOptions: FilterOption[] = [
+    {
+      key: 'category',
+      label: t('category'),
+      type: 'multiselect',
+      options: [
+        { value: 'living', label: t('living') },
+        { value: 'transportation', label: t('transportation') },
+        { value: 'healthcare', label: t('healthcare') },
+        { value: 'entertainment', label: t('entertainment') },
+        { value: 'education', label: t('education') },
+        { value: 'shopping', label: t('shopping') },
+        { value: 'utilities', label: t('utilities') },
+        { value: 'insurance', label: t('insurance') },
+        { value: 'taxes', label: t('taxes') },
+        { value: 'other', label: t('other') }
+      ]
+    },
+    {
+      key: 'date',
+      label: t('date'),
+      type: 'dateRange'
+    },
+    {
+      key: 'amount',
+      label: t('amount'),
+      type: 'numberRange'
+    }
+  ]
+
+  const categoryLabels = {
+    living: t('living'),
+    transportation: t('transportation'),
+    healthcare: t('healthcare'),
+    entertainment: t('entertainment'),
+    education: t('education'),
+    shopping: t('shopping'),
+    utilities: t('utilities'),
+    insurance: t('insurance'),
+    taxes: t('taxes'),
+    other: t('other'),
+  }
 
   const {
     searchTerm,
@@ -165,13 +167,13 @@ export default function ExpensesPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-white mb-2">ניהול הוצאות</h1>
-          <p className="text-slate-400">ניהול כל ההוצאות שלך</p>
+          <h1 className="text-3xl font-semibold text-white mb-2">{t('expenseManagement')}</h1>
+          <p className="text-slate-400">{t('manageAllExpenses')}</p>
         </div>
         <Link href="/expenses/new">
           <Button className="btn-primary">
             <PlusCircle className="h-4 w-4 ml-2" />
-            הוסף הוצאה חדשה
+            {t('addExpense')}
           </Button>
         </Link>
       </div>
@@ -223,7 +225,7 @@ export default function ExpensesPage() {
 
       {/* Search and Filters */}
       <SearchAndFilter
-        searchPlaceholder="חיפוש הוצאות לפי קטגוריה או תיאור..."
+        searchPlaceholder={t('searchExpenses')}
         searchValue={searchTerm}
         onSearchChange={setSearchTerm}
         filterOptions={filterOptions}
@@ -236,9 +238,9 @@ export default function ExpensesPage() {
       <Card className="card">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-white">כל ההוצאות</CardTitle>
+            <CardTitle className="text-white">{t('allExpenses')}</CardTitle>
             <div className="text-sm text-slate-400">
-              מציג {filteredExpenses.length} מתוך {expenses.length} הוצאות
+              {t('showing')} {filteredExpenses.length} {t('of')} {expenses.length} {t('expenses').toLowerCase()}
             </div>
           </div>
         </CardHeader>

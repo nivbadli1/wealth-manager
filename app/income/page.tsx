@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { SearchAndFilter, FilterOption } from '@/components/ui/SearchAndFilter'
 import { useSearchAndFilter } from '@/hooks/useSearchAndFilter'
+import { useLocalization } from '@/contexts/LocalizationContext'
 import Link from 'next/link'
 import {
   PlusCircle, Edit, Trash2, Eye, DollarSign, Calendar, FileText
@@ -64,15 +65,6 @@ interface Income {
 //   },
 // ]
 
-const categoryLabels = {
-  salary: 'משכורת',
-  investment: 'השקעות',
-  freelance: 'פרילנס',
-  rental: 'שכירות',
-  dividends: 'דיבידנדים',
-  other: 'אחר',
-}
-
 const categoryColors = {
   salary: 'bg-blue-100 text-blue-800',
   investment: 'bg-green-100 text-green-800',
@@ -82,36 +74,46 @@ const categoryColors = {
   other: 'bg-gray-100 text-gray-800',
 }
 
-const filterOptions: FilterOption[] = [
-  {
-    key: 'category',
-    label: 'קטגוריה',
-    type: 'multiselect',
-    options: [
-      { value: 'salary', label: 'משכורת' },
-      { value: 'investment', label: 'השקעות' },
-      { value: 'freelance', label: 'פרילנס' },
-      { value: 'rental', label: 'שכירות' },
-      { value: 'dividends', label: 'דיבידנדים' },
-      { value: 'other', label: 'אחר' }
-    ]
-  },
-  {
-    key: 'date',
-    label: 'תאריך',
-    type: 'dateRange'
-  },
-  {
-    key: 'amount',
-    label: 'סכום',
-    type: 'numberRange'
-  }
-]
-
 export default function IncomePage() {
+  const { t } = useLocalization()
   const [income, setIncome] = useState<Income[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const filterOptions: FilterOption[] = [
+    {
+      key: 'category',
+      label: t('category'),
+      type: 'multiselect',
+      options: [
+        { value: 'salary', label: t('salary') },
+        { value: 'investment', label: t('investment') },
+        { value: 'freelance', label: t('freelance') },
+        { value: 'rental', label: t('rental') },
+        { value: 'dividends', label: t('dividends') },
+        { value: 'other', label: t('other') }
+      ]
+    },
+    {
+      key: 'date',
+      label: t('date'),
+      type: 'dateRange'
+    },
+    {
+      key: 'amount',
+      label: t('amount'),
+      type: 'numberRange'
+    }
+  ]
+
+  const categoryLabels = {
+    salary: t('salary'),
+    investment: t('investment'),
+    freelance: t('freelance'),
+    rental: t('rental'),
+    dividends: t('dividends'),
+    other: t('other'),
+  }
 
   const {
     searchTerm,
@@ -179,13 +181,13 @@ export default function IncomePage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-white mb-2">ניהול הכנסות</h1>
-          <p className="text-slate-400">ניהול כל ההכנסות שלך</p>
+          <h1 className="text-3xl font-semibold text-white mb-2">{t('incomeManagement')}</h1>
+          <p className="text-slate-400">{t('manageAllIncome')}</p>
         </div>
         <Link href="/income/new">
           <Button className="btn-primary">
             <PlusCircle className="h-4 w-4 ml-2" />
-            הוסף הכנסה חדשה
+            {t('addIncome')}
           </Button>
         </Link>
       </div>
@@ -237,7 +239,7 @@ export default function IncomePage() {
 
       {/* Search and Filters */}
       <SearchAndFilter
-        searchPlaceholder="חיפוש הכנסות לפי מקור, תיאור או קטגוריה..."
+        searchPlaceholder={t('searchIncome')}
         searchValue={searchTerm}
         onSearchChange={setSearchTerm}
         filterOptions={filterOptions}
@@ -250,9 +252,9 @@ export default function IncomePage() {
       <Card className="card">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-white">כל ההכנסות</CardTitle>
+            <CardTitle className="text-white">{t('allIncome')}</CardTitle>
             <div className="text-sm text-slate-400">
-              מציג {filteredIncome.length} מתוך {income.length} הכנסות
+              {t('showing')} {filteredIncome.length} {t('of')} {income.length} {t('income').toLowerCase()}
             </div>
           </div>
         </CardHeader>

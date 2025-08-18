@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { SearchAndFilter, FilterOption } from '@/components/ui/SearchAndFilter'
 import { useSearchAndFilter } from '@/hooks/useSearchAndFilter'
+import { useLocalization } from '@/contexts/LocalizationContext'
 import Link from 'next/link'
 import {
   PlusCircle, Edit, Trash2, Eye, DollarSign, FileText, PiggyBank, TrendingUp
@@ -21,17 +22,6 @@ interface Investment {
   returnRate?: number
 }
 
-const typeLabels = {
-  stocks: 'מניות',
-  mutual_fund: 'קרן נאמנות',
-  pension: 'קופת גמל',
-  study_fund: 'קרן השתלמות',
-  savings: 'חיסכון',
-  bonds: 'אגרות חוב',
-  crypto: 'קריפטו',
-  other: 'אחר',
-}
-
 const typeColors = {
   stocks: 'bg-blue-100 text-blue-800',
   mutual_fund: 'bg-green-100 text-green-800',
@@ -43,43 +33,55 @@ const typeColors = {
   other: 'bg-gray-100 text-gray-800',
 }
 
-const filterOptions: FilterOption[] = [
-  {
-    key: 'type',
-    label: 'סוג השקעה',
-    type: 'multiselect',
-    options: [
-      { value: 'stocks', label: 'מניות' },
-      { value: 'mutual_fund', label: 'קרן נאמנות' },
-      { value: 'pension', label: 'קופת גמל' },
-      { value: 'study_fund', label: 'קרן השתלמות' },
-      { value: 'savings', label: 'חיסכון' },
-      { value: 'bonds', label: 'אגרות חוב' },
-      { value: 'crypto', label: 'קריפטו' },
-      { value: 'other', label: 'אחר' }
-    ]
-  },
-  {
-    key: 'date',
-    label: 'תאריך השקעה',
-    type: 'dateRange'
-  },
-  {
-    key: 'currentValue',
-    label: 'שווי נוכחי',
-    type: 'numberRange'
-  },
-  {
-    key: 'initialAmount',
-    label: 'השקעה ראשונית',
-    type: 'numberRange'
-  }
-]
-
 export default function InvestmentsPage() {
+  const { t } = useLocalization()
   const [investments, setInvestments] = useState<Investment[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const filterOptions: FilterOption[] = [
+    {
+      key: 'type',
+      label: t('investmentType'),
+      type: 'multiselect',
+      options: [
+        { value: 'stocks', label: t('stocks') },
+        { value: 'mutual_fund', label: t('mutualFund') },
+        { value: 'pension', label: t('pension') },
+        { value: 'study_fund', label: t('studyFund') },
+        { value: 'savings', label: t('savings') },
+        { value: 'bonds', label: t('bonds') },
+        { value: 'crypto', label: t('crypto') },
+        { value: 'other', label: t('other') }
+      ]
+    },
+    {
+      key: 'date',
+      label: t('investmentDate'),
+      type: 'dateRange'
+    },
+    {
+      key: 'currentValue',
+      label: t('currentValue'),
+      type: 'numberRange'
+    },
+    {
+      key: 'initialAmount',
+      label: t('initialAmount'),
+      type: 'numberRange'
+    }
+  ]
+
+  const typeLabels = {
+    stocks: t('stocks'),
+    mutual_fund: t('mutualFund'),
+    pension: t('pension'),
+    study_fund: t('studyFund'),
+    savings: t('savings'),
+    bonds: t('bonds'),
+    crypto: t('crypto'),
+    other: t('other'),
+  }
 
   const {
     searchTerm,
@@ -124,7 +126,7 @@ export default function InvestmentsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-96">
-        <div className="text-white">טוען השקעות...</div>
+        <div className="text-white">{t('loadingInvestments')}</div>
       </div>
     )
   }
@@ -142,13 +144,13 @@ export default function InvestmentsPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-white mb-2">ניהול השקעות</h1>
-          <p className="text-slate-400">ניהול כל ההשקעות הפיננסיות שלך</p>
+          <h1 className="text-3xl font-semibold text-white mb-2">{t('investmentManagement')}</h1>
+          <p className="text-slate-400">{t('manageAllInvestments')}</p>
         </div>
         <Link href="/investments/new">
           <Button className="btn-primary">
             <PlusCircle className="h-4 w-4 ml-2" />
-            הוסף השקעה חדשה
+            {t('addInvestment')}
           </Button>
         </Link>
       </div>
@@ -159,7 +161,7 @@ export default function InvestmentsPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-400 mb-1">סך השקעות</p>
+                <p className="text-sm text-slate-400 mb-1">{t('totalInvestments')}</p>
                 <p className="text-2xl font-bold text-white">{formatCurrency(totalInvestments)}</p>
               </div>
               <div className="p-3 bg-green-500 rounded-lg">
@@ -173,7 +175,7 @@ export default function InvestmentsPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-400 mb-1">השקעה ראשונית</p>
+                <p className="text-sm text-slate-400 mb-1">{t('initialAmount')}</p>
                 <p className="text-2xl font-bold text-white">{formatCurrency(totalInitial)}</p>
               </div>
               <div className="p-3 bg-blue-500 rounded-lg">
@@ -214,7 +216,7 @@ export default function InvestmentsPage() {
 
       {/* Search and Filters */}
       <SearchAndFilter
-        searchPlaceholder="חיפוש השקעות לפי שם או סוג..."
+        searchPlaceholder={t('searchInvestments')}
         searchValue={searchTerm}
         onSearchChange={setSearchTerm}
         filterOptions={filterOptions}
@@ -227,9 +229,9 @@ export default function InvestmentsPage() {
       <Card className="card">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-white">כל ההשקעות</CardTitle>
+            <CardTitle className="text-white">{t('allInvestments')}</CardTitle>
             <div className="text-sm text-slate-400">
-              מציג {filteredInvestments.length} מתוך {investments.length} השקעות
+              {t('showing')} {filteredInvestments.length} {t('of')} {investments.length} {t('investments').toLowerCase()}
             </div>
           </div>
         </CardHeader>

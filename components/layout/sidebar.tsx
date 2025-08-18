@@ -59,11 +59,13 @@ interface SidebarProps {
 
 export function Sidebar({ onClose }: SidebarProps) {
   const pathname = usePathname()
-  const { t } = useLocalization()
+  const { t, language } = useLocalization()
   const navigation = getNavigation(t)
+  
+  const isRTL = language === 'he'
 
   return (
-    <div className="fixed inset-y-0 right-0 w-64 bg-slate-800 border-l border-slate-600 shadow-lg z-40">
+    <div className={`fixed inset-y-0 w-64 bg-slate-800 shadow-lg z-40 ${isRTL ? 'right-0 border-l border-slate-600' : 'left-0 border-r border-slate-600'}`}>
       <div className="flex flex-col h-full">
         {/* Logo/Header */}
         <div className="flex items-center justify-between h-16 border-b border-slate-600 bg-slate-800 px-4">
@@ -105,7 +107,7 @@ export function Sidebar({ onClose }: SidebarProps) {
                 
                 {/* Sub-items */}
                 {item.subItems && isActive && (
-                  <div className="mr-6 mt-2 space-y-1">
+                  <div className={`${isRTL ? 'mr-6' : 'ml-6'} mt-2 space-y-1`}>
                     {item.subItems.map((subItem) => (
                       <Link
                         key={subItem.href}

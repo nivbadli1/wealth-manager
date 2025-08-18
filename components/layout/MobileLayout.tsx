@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Sidebar } from '@/components/layout/sidebar'
 import { Header } from '@/components/layout/header'
+import { useLocalization } from '@/contexts/LocalizationContext'
 
 export function MobileLayout({
   children,
@@ -10,6 +11,8 @@ export function MobileLayout({
   children: React.ReactNode
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { language } = useLocalization()
+  const isRTL = language === 'he'
 
   return (
     <>
@@ -20,7 +23,7 @@ export function MobileLayout({
           onClick={() => setSidebarOpen(false)}
         >
           <div className="fixed inset-0 bg-black bg-opacity-50" />
-          <div className="fixed inset-y-0 right-0 w-64 z-50">
+          <div className={`fixed inset-y-0 w-64 z-50 ${isRTL ? 'right-0' : 'left-0'}`}>
             <Sidebar onClose={() => setSidebarOpen(false)} />
           </div>
         </div>
@@ -34,7 +37,7 @@ export function MobileLayout({
         </div>
         
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col lg:mr-64">
+        <div className={`flex-1 flex flex-col ${isRTL ? 'lg:mr-64' : 'lg:ml-64'}`}>
           {/* Header with mobile menu button */}
           <Header onMenuClick={() => setSidebarOpen(true)} />
           
