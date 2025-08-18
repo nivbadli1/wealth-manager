@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Search, Filter, X, Calendar as CalendarIcon, ChevronDown } from 'lucide-react'
 import { format } from 'date-fns'
 import { he } from 'date-fns/locale'
+import { useLocalization } from '@/contexts/LocalizationContext'
 
 export interface FilterOption {
   key: string
@@ -46,6 +47,7 @@ export function SearchAndFilter({
   className = ""
 }: SearchAndFilterProps) {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const { t, language } = useLocalization()
 
   const activeFiltersCount = Object.values(filterValues).filter(value => {
     if (Array.isArray(value)) return value.length > 0
@@ -69,7 +71,7 @@ export function SearchAndFilter({
               <SelectValue placeholder={option.placeholder || option.label} />
             </SelectTrigger>
             <SelectContent className="bg-slate-700 border-slate-600">
-              <SelectItem value="">הכל</SelectItem>
+              <SelectItem value="">{t('all')}</SelectItem>
               {option.options?.map((opt) => (
                 <SelectItem key={opt.value} value={opt.value}>
                   {opt.label}
@@ -137,7 +139,7 @@ export function SearchAndFilter({
                   className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600 flex-1"
                 >
                   <CalendarIcon className="ml-2 h-4 w-4" />
-                  {dateRange.from ? format(new Date(dateRange.from), 'dd/MM/yyyy', { locale: he }) : 'מתאריך'}
+                  {dateRange.from ? format(new Date(dateRange.from), 'dd/MM/yyyy', { locale: language === 'he' ? he : undefined }) : t('fromDate')}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 bg-slate-700 border-slate-600">
@@ -156,7 +158,7 @@ export function SearchAndFilter({
                   className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600 flex-1"
                 >
                   <CalendarIcon className="ml-2 h-4 w-4" />
-                  {dateRange.to ? format(new Date(dateRange.to), 'dd/MM/yyyy', { locale: he }) : 'עד תאריך'}
+                  {dateRange.to ? format(new Date(dateRange.to), 'dd/MM/yyyy', { locale: language === 'he' ? he : undefined }) : t('toDate')}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 bg-slate-700 border-slate-600">
@@ -179,14 +181,14 @@ export function SearchAndFilter({
           <div className="flex gap-2">
             <Input
               type="number"
-              placeholder="מינימום"
+              placeholder={t('minimum')}
               value={numberRange.min}
               onChange={(e) => onFilterChange(option.key, { ...numberRange, min: e.target.value })}
               className="bg-slate-700 border-slate-600 text-white placeholder-slate-400"
             />
             <Input
               type="number"
-              placeholder="מקסימום"
+              placeholder={t('maximum')}
               value={numberRange.max}
               onChange={(e) => onFilterChange(option.key, { ...numberRange, max: e.target.value })}
               className="bg-slate-700 border-slate-600 text-white placeholder-slate-400"
@@ -219,7 +221,7 @@ export function SearchAndFilter({
             onClick={() => setIsFilterOpen(!isFilterOpen)}
           >
             <Filter className="h-4 w-4 ml-2" />
-            סינון
+            {t('filter')}
             {activeFiltersCount > 0 && (
               <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center bg-blue-500 text-white text-xs">
                 {activeFiltersCount}
@@ -234,8 +236,8 @@ export function SearchAndFilter({
               onClick={onClearFilters}
               className="text-slate-400 hover:text-white"
             >
-              <X className="h-4 w-4 ml-1" />
-              נקה
+                          <X className="h-4 w-4 ml-1" />
+            {t('clear')}
             </Button>
           )}
         </div>
@@ -245,7 +247,7 @@ export function SearchAndFilter({
       {isFilterOpen && (
         <Card className="card">
           <CardHeader>
-            <CardTitle className="text-white text-lg">סינון מתקדם</CardTitle>
+            <CardTitle className="text-white text-lg">{t('advancedFilter')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -264,13 +266,13 @@ export function SearchAndFilter({
                 onClick={onClearFilters}
                 className="text-slate-400 hover:text-white"
               >
-                נקה הכל
+                {t('clearAll')}
               </Button>
               <Button
                 onClick={() => setIsFilterOpen(false)}
                 className="btn-primary"
               >
-                החל סינון
+                {t('applyFilter')}
               </Button>
             </div>
           </CardContent>

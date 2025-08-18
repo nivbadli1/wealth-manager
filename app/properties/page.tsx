@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { SearchAndFilter, FilterOption } from '@/components/ui/SearchAndFilter'
 import { useSearchAndFilter } from '@/hooks/useSearchAndFilter'
+import { useLocalization } from '@/contexts/LocalizationContext'
 import Link from 'next/link'
 import {
   PlusCircle, Edit, Trash2, Eye, Building2, MapPin, DollarSign, Calendar, Loader2
@@ -97,66 +98,67 @@ interface Property {
 //   },
 // ]
 
-const propertyTypeLabels = {
-  apartment: 'דירה',
-  house: 'בית פרטי',
-  commercial: 'מסחרי',
-}
-
-const statusLabels = {
-  rented: 'מושכר',
-  vacant: 'פנוי',
-  'owner-occupied': 'בבעלות',
-}
-
 const statusColors = {
   rented: 'bg-green-100 text-green-800',
   vacant: 'bg-yellow-100 text-yellow-800',
   'owner-occupied': 'bg-blue-100 text-blue-800',
 }
 
-const filterOptions: FilterOption[] = [
-  {
-    key: 'propertyType',
-    label: 'סוג נכס',
-    type: 'select',
-    options: [
-      { value: 'apartment', label: 'דירה' },
-      { value: 'house', label: 'בית פרטי' },
-      { value: 'commercial', label: 'מסחרי' }
-    ]
-  },
-  {
-    key: 'status',
-    label: 'סטטוס',
-    type: 'multiselect',
-    options: [
-      { value: 'rented', label: 'מושכר' },
-      { value: 'vacant', label: 'פנוי' },
-      { value: 'owner-occupied', label: 'בבעלות' }
-    ]
-  },
-  {
-    key: 'purchaseDate',
-    label: 'תאריך רכישה',
-    type: 'dateRange'
-  },
-  {
-    key: 'currentValue',
-    label: 'שווי נוכחי',
-    type: 'numberRange'
-  },
-  {
-    key: 'purchasePrice',
-    label: 'מחיר רכישה',
-    type: 'numberRange'
-  }
-]
-
 export default function PropertiesPage() {
+  const { t } = useLocalization()
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+  const filterOptions: FilterOption[] = [
+    {
+      key: 'propertyType',
+      label: t('propertyType'),
+      type: 'select',
+      options: [
+        { value: 'apartment', label: t('apartment') },
+        { value: 'house', label: t('house') },
+        { value: 'commercial', label: t('commercial') }
+      ]
+    },
+    {
+      key: 'status',
+      label: t('status'),
+      type: 'multiselect',
+      options: [
+        { value: 'rented', label: t('rented') },
+        { value: 'vacant', label: t('vacant') },
+        { value: 'owner-occupied', label: t('owned') }
+      ]
+    },
+    {
+      key: 'purchaseDate',
+      label: t('purchaseDate'),
+      type: 'dateRange'
+    },
+    {
+      key: 'currentValue',
+      label: t('currentValue'),
+      type: 'numberRange'
+    },
+    {
+      key: 'purchasePrice',
+      label: t('purchasePrice'),
+      type: 'numberRange'
+    }
+  ]
+
+  const propertyTypeLabels = {
+    apartment: t('apartment'),
+    house: t('house'),
+    commercial: t('commercial'),
+  }
+
+  const statusLabels = {
+    rented: t('rented'),
+    vacant: t('vacant'),
+    'owner-occupied': t('owned'),
+  }
 
   const {
     searchTerm,
@@ -192,7 +194,7 @@ export default function PropertiesPage() {
   }
 
   const handleDelete = async (propertyId: string, propertyName: string) => {
-    if (!confirm(`האם אתה בטוח שברצונך למחוק את הנכס "${propertyName}"?`)) {
+    if (!confirm(`${t('deleteConfirm')} "${propertyName}"?`)) {
       return
     }
 
@@ -207,10 +209,10 @@ export default function PropertiesPage() {
 
       // Remove the deleted property from the list
       setProperties(prev => prev.filter(p => p.id !== propertyId))
-      alert('הנכס נמחק בהצלחה!')
+      alert(t('deleteSuccess'))
     } catch (error) {
       console.error('Error deleting property:', error)
-      alert('שגיאה במחיקת הנכס')
+      alert(t('deleteError'))
     }
   }
 
@@ -219,7 +221,7 @@ export default function PropertiesPage() {
       <div className="flex items-center justify-center h-64">
         <div className="flex items-center gap-2">
           <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
-          <span className="text-white">טוען נכסים...</span>
+          <span className="text-white">{t('loadingProperties')}</span>
         </div>
       </div>
     )
@@ -231,7 +233,7 @@ export default function PropertiesPage() {
         <div className="text-center">
           <p className="text-red-400 mb-4">{error}</p>
           <Button onClick={fetchProperties} className="btn-primary">
-            נסה שוב
+            {t('tryAgain')}
           </Button>
         </div>
       </div>
@@ -243,13 +245,13 @@ export default function PropertiesPage() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold text-white mb-2">ניהול נכסים</h1>
-          <p className="text-slate-400 text-sm sm:text-base">ניהול נכסי הנדל״ן שלך</p>
+          <h1 className="text-2xl sm:text-3xl font-semibold text-white mb-2">{t('propertyManagement')}</h1>
+          <p className="text-slate-400 text-sm sm:text-base">{t('manageAllProperties')}</p>
         </div>
         <Link href="/properties/new">
           <Button className="btn-primary w-full sm:w-auto">
             <PlusCircle className="h-4 w-4 ml-2" />
-            הוסף נכס חדש
+            {t('addProperty')}
           </Button>
         </Link>
       </div>
@@ -260,7 +262,7 @@ export default function PropertiesPage() {
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-400 mb-1">סך הנכסים</p>
+                <p className="text-sm text-slate-400 mb-1">{t('totalProperties')}</p>
                 <p className="text-2xl font-bold text-white">{properties.length}</p>
               </div>
               <div className="p-3 bg-blue-500 rounded-lg">
@@ -274,7 +276,7 @@ export default function PropertiesPage() {
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-400 mb-1">שווי כולל</p>
+                <p className="text-sm text-slate-400 mb-1">{t('totalValue')}</p>
                 <p className="text-xl sm:text-2xl font-bold text-white">
                   {formatCurrency(properties.reduce((sum, p) => sum + p.currentValue, 0))}
                 </p>
@@ -290,7 +292,7 @@ export default function PropertiesPage() {
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-400 mb-1">הכנסה חודשית</p>
+                <p className="text-sm text-slate-400 mb-1">{t('monthlyIncome')}</p>
                 <p className="text-xl sm:text-2xl font-bold text-white">
                   {formatCurrency(properties.reduce((sum, p) => sum + (p.RentalIncome.length > 0 ? p.RentalIncome[0].amount : 0), 0))}
                 </p>
@@ -306,7 +308,7 @@ export default function PropertiesPage() {
           <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-400 mb-1">נכסים מושכרים</p>
+                <p className="text-sm text-slate-400 mb-1">{t('rentedProperties')}</p>
                 <p className="text-xl sm:text-2xl font-bold text-white">
                   {properties.filter(p => p.status === 'rented').length}
                 </p>
@@ -321,7 +323,7 @@ export default function PropertiesPage() {
 
       {/* Search and Filters */}
       <SearchAndFilter
-        searchPlaceholder="חיפוש נכסים לפי שם או כתובת..."
+        searchPlaceholder={t('searchProperties')}
         searchValue={searchTerm}
         onSearchChange={setSearchTerm}
         filterOptions={filterOptions}
@@ -334,9 +336,9 @@ export default function PropertiesPage() {
       <Card className="card">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-white">כל הנכסים</CardTitle>
+            <CardTitle className="text-white">{t('allProperties')}</CardTitle>
             <div className="text-sm text-slate-400">
-              מציג {filteredProperties.length} מתוך {properties.length} נכסים
+              {t('showing')} {filteredProperties.length} {t('of')} {properties.length} {t('properties').toLowerCase()}
             </div>
           </div>
         </CardHeader>
