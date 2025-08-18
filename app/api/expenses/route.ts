@@ -27,19 +27,30 @@ export async function POST(request: NextRequest) {
     // Validate the input data
     const validatedData = expenseSchema.parse({
       ...body,
-      amount: parseFloat(body.amount),
-      date: new Date(body.date).toISOString()
+      amount: parseFloat(body.amount)
     })
 
-    // Create the expense
+    // Create the expense with proper date conversion
     const expense = await prisma.expense.create({
-      data: validatedData
+      data: {
+        ...validatedData,
+        date: new Date(validatedData.date)
+      }
     })
 
     return NextResponse.json(expense, { status: 201 })
   } catch (error) {
     console.error('Error creating expense:', error)
     
+    // Handle Zod validation errors
+    if (error && typeof error === 'object' && 'issues' in error) {
+      return NextResponse.json(
+        { error: 'Invalid expense data', details: error },
+        { status: 400 }
+      )
+    }
+
+    // Handle other validation errors
     if (error instanceof Error && error.message.includes('validation')) {
       return NextResponse.json(
         { error: 'Invalid expense data', details: error.message },
@@ -48,7 +59,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Failed to create expense' },
+      { error: 'Failed to create expense', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }
